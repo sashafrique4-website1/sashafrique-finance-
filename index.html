@@ -382,7 +382,7 @@
           <div class="field" style="grid-column:span 3;"><label>Description</label><input id="rDesc" placeholder="e.g. 3 embroidery sashes"></div>
         </div>
         <button class="btn-small" onclick="addRevenue()">Record payment</button>
-        <div class="pill-note">Date defaults to today but can be backdated for late entries. Achiever and order details are tracked in the CRM, not here. Made a mistake, or an achiever completed a part-payment? Edit the Status or Amount directly in the log below, or delete the row entirely.</div>
+        <div class="pill-note">Date defaults to today but can be backdated for late entries. Achiever and order details are tracked in the CRM, not here. Made a mistake, or an achiever completed a part-payment? Edit the Status or Amount directly in the log below and click Save, or delete the row entirely.</div>
       </div>
       <div class="section">
         <h2>Revenue Log <small id="revenueLogSub">Jul 2026</small></h2>
@@ -2506,19 +2506,23 @@ function renderRevenue(){
   let rows = revenueEntries.slice().sort((a,b)=>a.date<b.date?1:-1);
   if(monthFilter!=='all') rows = rows.filter(r=>r.date.startsWith(monthFilter));
   if(q) rows = rows.filter(r=>[r.order,r.name,r.method,r.status,r.desc,r.ref].join(' ').toLowerCase().includes(q));
-  tb.innerHTML = rows.map(r=>{
+  window._revRows = rows; // row index -> entry, so Save/Delete buttons never have to embed the id in an attribute string
+  tb.innerHTML = rows.map((r,i)=>{
     const note = r.desc || (r.name && r.name!=='Walk-in achiever' ? r.name : '') || '—';
     return `<tr>
     <td>${r.date}</td><td>${r.method}</td>
-    <td><select class="cell-input" style="width:auto;text-align:left;" onchange="updateRevenueField(${JSON.stringify(r.id)},'status',this.value)">
+    <td><select class="cell-input" id="revStatus-${i}" style="width:auto;text-align:left;">
       <option value="full" ${r.status==='full'?'selected':''}>full</option>
       <option value="deposit" ${r.status==='deposit'?'selected':''}>deposit</option>
       <option value="part" ${r.status==='part'?'selected':''}>part</option>
       <option value="outstanding" ${r.status==='outstanding'?'selected':''}>outstanding</option>
     </select></td>
     <td>${note}</td>
-    <td class="num"><input class="cell-input" type="number" style="text-align:right;" value="${r.amount}" onchange="updateRevenueField(${JSON.stringify(r.id)},'amount',this.value)"></td>
-    <td><button class="row-del" onclick="deleteRevenue(${JSON.stringify(r.id)})" title="Delete this entry">✕</button></td>
+    <td class="num"><input class="cell-input" type="number" id="revAmount-${i}" style="text-align:right;" value="${r.amount}"></td>
+    <td style="white-space:nowrap;">
+      <button class="btn-ghost" id="revSaveBtn-${i}" style="padding:5px 10px;font-size:11px;" onclick="saveRevenueRow(${i})">Save</button>
+      <button class="row-del" onclick="deleteRevenue(${i})" title="Delete this entry">✕</button>
+    </td>
     </tr>`;
   }).join('') ||
     `<tr><td colspan="6" style="color:var(--muted);">No payments match${monthFilter!=='all'||q?' this filter':' yet'}.</td></tr>`;
@@ -2528,16 +2532,21 @@ function renderRevenue(){
   const countEl = document.getElementById('revenueLogCount');
   if(countEl) countEl.textContent = rows.length+' entr'+(rows.length===1?'y':'ies')+' · GH₵'+total.toLocaleString(undefined,{maximumFractionDigits:2});
 }
-function updateRevenueField(id, field, val){
-  const r = revenueEntries.find(x=>String(x.id)===String(id)); if(!r) return;
-  r[field] = field==='amount' ? (parseFloat(val)||0) : val;
+function saveRevenueRow(i){
+  const r = window._revRows[i]; if(!r) return;
+  const newStatus = document.getElementById('revStatus-'+i).value;
+  const newAmount = parseFloat(document.getElementById('revAmount-'+i).value) || 0;
+  r.status = newStatus; r.amount = newAmount;
   syncEntity('update','revenue', r.id, r);
-  renderAll();
+  const btn = document.getElementById('revSaveBtn-'+i);
+  if(btn){ const old = btn.textContent; btn.textContent = 'Saved ✓'; setTimeout(()=>{ if(btn) btn.textContent = old; }, 1200); }
+  renderDashboard(); renderBriefing(); renderPNL();
 }
-function deleteRevenue(id){
+function deleteRevenue(i){
+  const r = window._revRows[i]; if(!r) return;
   if(!confirm('Delete this payment entry? This cannot be undone.')) return;
-  revenueEntries = revenueEntries.filter(x=>String(x.id)!==String(id));
-  syncEntity('delete','revenue', id);
+  revenueEntries = revenueEntries.filter(x=>x!==r);
+  syncEntity('delete','revenue', r.id);
   renderAll();
 }
 
@@ -2583,10 +2592,14 @@ function renderExpenses(){
   let rows = expenseEntries.slice().sort((a,b)=>a.date<b.date?1:-1);
   if(monthFilter!=='all') rows = rows.filter(e=>e.date.startsWith(monthFilter));
   if(q) rows = rows.filter(e=>[e.category,e.dept,e.supplier,e.narration,e.method].join(' ').toLowerCase().includes(q));
-  tb.innerHTML = rows.map(e=>`<tr>
+  window._expRows = rows;
+  tb.innerHTML = rows.map((e,i)=>`<tr>
     <td>${e.date}</td><td>${e.category}</td><td>${e.dept}</td><td>${e.supplier||'—'}</td><td>${e.narration||'—'}</td>
-    <td class="num"><input class="cell-input" type="number" style="text-align:right;" value="${e.amount}" onchange="updateExpenseField(${JSON.stringify(e.id)},'amount',this.value)"></td>
-    <td><button class="row-del" onclick="deleteExpense(${JSON.stringify(e.id)})" title="Delete this entry">✕</button></td>
+    <td class="num"><input class="cell-input" type="number" id="expAmount-${i}" style="text-align:right;" value="${e.amount}"></td>
+    <td style="white-space:nowrap;">
+      <button class="btn-ghost" id="expSaveBtn-${i}" style="padding:5px 10px;font-size:11px;" onclick="saveExpenseRow(${i})">Save</button>
+      <button class="row-del" onclick="deleteExpense(${i})" title="Delete this entry">✕</button>
+    </td>
     </tr>`).join('') ||
     `<tr><td colspan="7" style="color:var(--muted);">No expenses match${monthFilter!=='all'||q?' this filter':' yet'}.</td></tr>`;
   document.getElementById('supplierList').innerHTML = suppliers.map(s=>`<option value="${s.name}">`).join('');
@@ -2596,16 +2609,20 @@ function renderExpenses(){
   const countEl = document.getElementById('expenseLogCount');
   if(countEl) countEl.textContent = rows.length+' entr'+(rows.length===1?'y':'ies')+' · GH₵'+total.toLocaleString(undefined,{maximumFractionDigits:2});
 }
-function updateExpenseField(id, field, val){
-  const e = expenseEntries.find(x=>String(x.id)===String(id)); if(!e) return;
-  e[field] = field==='amount' ? (parseFloat(val)||0) : val;
+function saveExpenseRow(i){
+  const e = window._expRows[i]; if(!e) return;
+  const newAmount = parseFloat(document.getElementById('expAmount-'+i).value) || 0;
+  e.amount = newAmount;
   syncEntity('update','expenses', e.id, e);
-  renderAll();
+  const btn = document.getElementById('expSaveBtn-'+i);
+  if(btn){ const old = btn.textContent; btn.textContent = 'Saved ✓'; setTimeout(()=>{ if(btn) btn.textContent = old; }, 1200); }
+  renderDashboard(); renderBriefing(); renderPNL();
 }
-function deleteExpense(id){
+function deleteExpense(i){
+  const e = window._expRows[i]; if(!e) return;
   if(!confirm('Delete this expense entry? This cannot be undone.')) return;
-  expenseEntries = expenseEntries.filter(x=>String(x.id)!==String(id));
-  syncEntity('delete','expenses', id);
+  expenseEntries = expenseEntries.filter(x=>x!==e);
+  syncEntity('delete','expenses', e.id);
   renderAll();
 }
 
