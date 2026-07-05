@@ -382,7 +382,7 @@
           <div class="field" style="grid-column:span 3;"><label>Description</label><input id="rDesc" placeholder="e.g. 3 embroidery sashes"></div>
         </div>
         <button class="btn-small" onclick="addRevenue()">Record payment</button>
-        <div class="pill-note">Date defaults to today but can be backdated for late entries. Achiever and order details are tracked in the CRM, not here.</div>
+        <div class="pill-note">Date defaults to today but can be backdated for late entries. Achiever and order details are tracked in the CRM, not here. Made a mistake, or an achiever completed a part-payment? Edit the Status or Amount directly in the log below, or delete the row entirely.</div>
       </div>
       <div class="section">
         <h2>Revenue Log <small id="revenueLogSub">Jul 2026</small></h2>
@@ -417,7 +417,7 @@
           <span class="log-count" id="revenueLogCount"></span>
         </div>
         <table>
-          <thead><tr><th>Date</th><th>Method</th><th>Status</th><th>Description</th><th class="num">Amount</th></tr></thead>
+          <thead><tr><th>Date</th><th>Method</th><th>Status</th><th>Description</th><th class="num">Amount</th><th></th></tr></thead>
           <tbody id="revenueTable"></tbody>
         </table>
       </div>
@@ -482,7 +482,7 @@
           <span class="log-count" id="expenseLogCount"></span>
         </div>
         <table>
-          <thead><tr><th>Date</th><th>Category</th><th>Department</th><th>Supplier</th><th>Narration</th><th class="num">Amount</th></tr></thead>
+          <thead><tr><th>Date</th><th>Category</th><th>Department</th><th>Supplier</th><th>Narration</th><th class="num">Amount</th><th></th></tr></thead>
           <tbody id="expenseTable"></tbody>
         </table>
       </div>
@@ -757,8 +757,30 @@ function syncEntity(action, entity, a, b){
              : apiDelete(entity, a);
   call.then(res=>{
     if(!res || !res.ok){ setSyncStatus('⚠ Sync error — saved locally only', true); }
-    else { setSyncStatus('Synced ✓'); }
+    else {
+      // Keep the local record's id in sync with whatever the backend assigned,
+      // so a later edit/delete on this same record targets the right sheet row.
+      if(action==='add' && res.data && res.data.id!==undefined && a && typeof a==='object'){
+        a.id = res.data.id;
+      }
+      setSyncStatus('Synced ✓');
+    }
   }).catch(()=>{ setSyncStatus('⚠ Offline — saved locally only', true); });
+}
+
+function applyBackendData(data){
+  // Backend is the source of truth once it has data — replace local arrays with it.
+  if(data.revenue && data.revenue.length) revenueEntries = data.revenue;
+  if(data.expenses && data.expenses.length) expenseEntries = data.expenses;
+  if(data.achievers && data.achievers.length) achievers = data.achievers;
+  if(data.suppliers && data.suppliers.length) suppliers = data.suppliers;
+  if(data.budgets && data.budgets.length) budgets = data.budgets;
+  if(data.staff && data.staff.length) staff = data.staff;
+  if(data.assets && data.assets.length) assets = data.assets;
+  if(data.investors && data.investors.length) investors = data.investors;
+  if(data.reserves && data.reserves.length) reserveWithdrawals = data.reserves;
+  if(data.products && data.products.length) products = data.products;
+  if(data.fixedCosts && data.fixedCosts.length) fixedCosts = data.fixedCosts;
 }
 
 async function initBackendSync(){
@@ -777,20 +799,14 @@ async function initBackendSync(){
       };
       const seedRes = await apiSeedAll(seedPayload);
       if(!seedRes || !seedRes.ok) throw new Error('seeding failed');
+      // Re-fetch so every local record picks up the id the backend actually assigned it —
+      // needed for edit/delete on these rows to work correctly afterwards.
+      const boot2 = await apiBootstrap();
+      if(boot2 && boot2.ok) applyBackendData(boot2.data);
       setSyncStatus('Synced ✓ (initial upload complete)');
+      renderAll();
     } else {
-      // Backend already has data — it's the source of truth from here on.
-      revenueEntries = data.revenue.length ? data.revenue : revenueEntries;
-      expenseEntries = data.expenses.length ? data.expenses : expenseEntries;
-      if(data.achievers.length) achievers = data.achievers;
-      if(data.suppliers.length) suppliers = data.suppliers;
-      if(data.budgets.length) budgets = data.budgets;
-      if(data.staff.length) staff = data.staff;
-      if(data.assets.length) assets = data.assets;
-      if(data.investors.length) investors = data.investors;
-      if(data.reserves.length) reserveWithdrawals = data.reserves;
-      if(data.products.length) products = data.products;
-      if(data.fixedCosts.length) fixedCosts = data.fixedCosts;
+      applyBackendData(data);
       setSyncStatus('Synced ✓');
       renderAll();
     }
@@ -1671,6 +1687,7 @@ let revenueEntries = [
   {date:'2026-06-29',order:'—',name:'Sales (ledger import)',method:'MTN MoMo',status:'full',ref:'',desc:'',amount:100.0},
   {date:'2026-06-30',order:'—',name:'Sales (ledger import)',method:'MTN MoMo',status:'full',ref:'',desc:'',amount:600.0}
 ]; // imported from GL, Jan 2025 - June 2026; July 2026 entries added live
+revenueEntries.forEach((r,i)=>{ if(r.id===undefined) r.id = i+1; });
 let expenseEntries = [
   {date:'2025-01-31',category:'Weaving of sash',dept:'Production',supplier:'',narration:'Cost of Weaving of sash',method:'MTN MoMo',amount:13095.0},
   {date:'2025-01-31',category:'Embroidery',dept:'Production',supplier:'',narration:'Cost of embroidery',method:'MTN MoMo',amount:4074.0},
@@ -2419,6 +2436,7 @@ let expenseEntries = [
   {date:'2026-06-30',category:'Embroidery',dept:'Production',supplier:'',narration:'Embriodery',method:'MTN MoMo',amount:65.0},
   {date:'2026-06-30',category:'Momo/Bank charges',dept:'Admin',supplier:'',narration:'Momo charges',method:'MTN MoMo',amount:0.48}
 ]; // imported from GL, Jan 2025 - June 2026; July 2026 entries added live
+expenseEntries.forEach((e,i)=>{ if(e.id===undefined) e.id = i+1; });
 
 /* ---------------- LOGIN ---------------- */
 function doLogin(){
@@ -2470,7 +2488,7 @@ function addRevenue(){
   const status = document.getElementById('rStatus').value;
   const date = document.getElementById('rDate').value || new Date().toISOString().slice(0,10);
   const entry = {
-    date, order:'—', name:'',
+    id:'tmp-'+Date.now(), date, order:'—', name:'',
     method: document.getElementById('rMethod').value, status,
     ref: document.getElementById('rRef').value, desc: document.getElementById('rDesc').value, amount
   };
@@ -2492,16 +2510,35 @@ function renderRevenue(){
     const note = r.desc || (r.name && r.name!=='Walk-in achiever' ? r.name : '') || '—';
     return `<tr>
     <td>${r.date}</td><td>${r.method}</td>
-    <td><span class="tag ${r.status==='full'?'full':(r.status==='outstanding'?'outstanding':'deposit')}">${r.status}</span></td>
+    <td><select class="cell-input" style="width:auto;text-align:left;" onchange="updateRevenueField(${JSON.stringify(r.id)},'status',this.value)">
+      <option value="full" ${r.status==='full'?'selected':''}>full</option>
+      <option value="deposit" ${r.status==='deposit'?'selected':''}>deposit</option>
+      <option value="part" ${r.status==='part'?'selected':''}>part</option>
+      <option value="outstanding" ${r.status==='outstanding'?'selected':''}>outstanding</option>
+    </select></td>
     <td>${note}</td>
-    <td class="num">GH₵${r.amount.toFixed(2)}</td></tr>`;
+    <td class="num"><input class="cell-input" type="number" style="text-align:right;" value="${r.amount}" onchange="updateRevenueField(${JSON.stringify(r.id)},'amount',this.value)"></td>
+    <td><button class="row-del" onclick="deleteRevenue(${JSON.stringify(r.id)})" title="Delete this entry">✕</button></td>
+    </tr>`;
   }).join('') ||
-    `<tr><td colspan="5" style="color:var(--muted);">No payments match${monthFilter!=='all'||q?' this filter':' yet'}.</td></tr>`;
+    `<tr><td colspan="6" style="color:var(--muted);">No payments match${monthFilter!=='all'||q?' this filter':' yet'}.</td></tr>`;
   const sub = monthFilter==='all' ? 'All months' : (MONTH_LABELS[monthFilter.slice(5,7)]+' '+monthFilter.slice(0,4));
   const subEl = document.getElementById('revenueLogSub'); if(subEl) subEl.textContent = sub;
   const total = rows.reduce((s,r)=>s+r.amount,0);
   const countEl = document.getElementById('revenueLogCount');
   if(countEl) countEl.textContent = rows.length+' entr'+(rows.length===1?'y':'ies')+' · GH₵'+total.toLocaleString(undefined,{maximumFractionDigits:2});
+}
+function updateRevenueField(id, field, val){
+  const r = revenueEntries.find(x=>String(x.id)===String(id)); if(!r) return;
+  r[field] = field==='amount' ? (parseFloat(val)||0) : val;
+  syncEntity('update','revenue', r.id, r);
+  renderAll();
+}
+function deleteRevenue(id){
+  if(!confirm('Delete this payment entry? This cannot be undone.')) return;
+  revenueEntries = revenueEntries.filter(x=>String(x.id)!==String(id));
+  syncEntity('delete','revenue', id);
+  renderAll();
 }
 
 /* ---------------- EXPENSES ---------------- */
@@ -2523,6 +2560,7 @@ function addExpense(){
   const supplierName = document.getElementById('eSupplier').value.trim();
   const date = document.getElementById('eDate').value || new Date().toISOString().slice(0,10);
   const entry = {
+    id:'tmp-'+Date.now(),
     date,
     category: document.getElementById('eCategory').value,
     dept: document.getElementById('eDept').value,
@@ -2547,14 +2585,28 @@ function renderExpenses(){
   if(q) rows = rows.filter(e=>[e.category,e.dept,e.supplier,e.narration,e.method].join(' ').toLowerCase().includes(q));
   tb.innerHTML = rows.map(e=>`<tr>
     <td>${e.date}</td><td>${e.category}</td><td>${e.dept}</td><td>${e.supplier||'—'}</td><td>${e.narration||'—'}</td>
-    <td class="num">GH₵${e.amount.toFixed(2)}</td></tr>`).join('') ||
-    `<tr><td colspan="6" style="color:var(--muted);">No expenses match${monthFilter!=='all'||q?' this filter':' yet'}.</td></tr>`;
+    <td class="num"><input class="cell-input" type="number" style="text-align:right;" value="${e.amount}" onchange="updateExpenseField(${JSON.stringify(e.id)},'amount',this.value)"></td>
+    <td><button class="row-del" onclick="deleteExpense(${JSON.stringify(e.id)})" title="Delete this entry">✕</button></td>
+    </tr>`).join('') ||
+    `<tr><td colspan="7" style="color:var(--muted);">No expenses match${monthFilter!=='all'||q?' this filter':' yet'}.</td></tr>`;
   document.getElementById('supplierList').innerHTML = suppliers.map(s=>`<option value="${s.name}">`).join('');
   const sub = monthFilter==='all' ? 'All months' : (MONTH_LABELS[monthFilter.slice(5,7)]+' '+monthFilter.slice(0,4));
   const subEl = document.getElementById('expenseLogSub'); if(subEl) subEl.textContent = sub;
   const total = rows.reduce((s,e)=>s+e.amount,0);
   const countEl = document.getElementById('expenseLogCount');
   if(countEl) countEl.textContent = rows.length+' entr'+(rows.length===1?'y':'ies')+' · GH₵'+total.toLocaleString(undefined,{maximumFractionDigits:2});
+}
+function updateExpenseField(id, field, val){
+  const e = expenseEntries.find(x=>String(x.id)===String(id)); if(!e) return;
+  e[field] = field==='amount' ? (parseFloat(val)||0) : val;
+  syncEntity('update','expenses', e.id, e);
+  renderAll();
+}
+function deleteExpense(id){
+  if(!confirm('Delete this expense entry? This cannot be undone.')) return;
+  expenseEntries = expenseEntries.filter(x=>String(x.id)!==String(id));
+  syncEntity('delete','expenses', id);
+  renderAll();
 }
 
 /* ---------------- ACHIEVERS ---------------- */
