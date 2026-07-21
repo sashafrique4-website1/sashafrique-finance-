@@ -232,6 +232,7 @@
       <div class="nav-group collapsed" id="navgroup-reports">
         <button class="nav-group-toggle" onclick="toggleNavGroup(&#39;navgroup-reports&#39;)">Reports <span class="chev">▾</span></button>
         <div class="nav-group-body">
+          <button class="nav-btn" data-view="leadership" onclick="showView(&#39;leadership&#39;)">Leadership Report</button>
           <button class="nav-btn" data-view="cashflow" onclick="showView(&#39;cashflow&#39;)">Cashflow</button>
           <button class="nav-btn" data-view="balancesheet" onclick="showView(&#39;balancesheet&#39;)">Balance Sheet</button>
           <button class="nav-btn" data-view="pnl" onclick="showView(&#39;pnl&#39;)">P&amp;L</button>
@@ -260,6 +261,7 @@
       </div>
 
       <div class="grid cards" style="margin-top:16px;">
+        <div class="card card-gold"><div class="label">True Profit / (Loss) — after Fixed Costs</div><div class="value" id="kpiTrueProfit">—</div><div class="delta" id="kpiTrueProfitDelta"><span class="muted">Surplus minus fixed costs</span></div></div>
         <div class="card"><div class="label">Monthly Profit Target — Jul</div><div class="value" id="kpiTarget">GH₵-674 / GH₵8,000</div><div class="delta" id="kpiTargetBar"><div style="background:#222;border-radius:20px;height:6px;margin-top:6px;overflow:hidden;"><div style="width:0%;background:var(--gold);height:100%;"></div></div><span class="muted" style="font-size:11px;">0% of target</span></div></div>
         <div class="card"><div class="label">Break-even Progress</div><div class="value" id="kpiBE">3% of BEP</div><div class="delta" id="kpiBEBar"><div style="background:#222;border-radius:20px;height:6px;margin-top:6px;overflow:hidden;"><div style="width:2.723910836737553%;background:var(--gold);height:100%;"></div></div></div></div>
         <div class="card"><div class="label">Outstanding Receivables</div><div class="value" id="kpiReceivables">GH₵1,240</div><div class="delta">3 achievers with balances</div></div>
@@ -17495,6 +17497,43 @@
         </table>
       </div>
     </div>
+
+    <!-- LEADERSHIP REPORT -->
+    <div class="view" id="view-leadership">
+      <div class="section">
+        <h2>Report to Leadership <small>CFO-style summary for the board — framed in percentages and month-over-month movement</small></h2>
+        <div id="leadershipHeadline" style="font-size:14.5px;line-height:1.7;color:var(--white);"></div>
+      </div>
+
+      <div class="grid cards" style="margin-top:16px;">
+        <div class="card"><div class="label">Revenue Growth (MoM)</div><div class="value" id="lrRevGrowth">—</div><div class="delta muted">vs previous month</div></div>
+        <div class="card"><div class="label">Net Margin</div><div class="value" id="lrNetMargin">—</div><div class="delta muted">Surplus ÷ Sales</div></div>
+        <div class="card card-gold"><div class="label">True Profit Margin</div><div class="value" id="lrTrueMargin">—</div><div class="delta muted">After fixed costs, ÷ Sales</div></div>
+        <div class="card"><div class="label">Break-even Coverage</div><div class="value" id="lrBECoverage">—</div><div class="delta muted">of break-even revenue, this month</div></div>
+      </div>
+
+      <div class="section" style="margin-top:20px;">
+        <h2>Month-over-Month Scorecard</h2>
+        <table>
+          <thead><tr><th>Metric</th><th class="num">This Month</th><th class="num">Last Month</th><th class="num">% Change</th></tr></thead>
+          <tbody id="leadershipScorecard"></tbody>
+        </table>
+      </div>
+
+      <div class="section" style="margin-top:20px;">
+        <h2>Trend Since January <small>Sales, Surplus and True Profit/(Loss) — % change shown month to month</small></h2>
+        <table>
+          <thead><tr><th>Month</th><th class="num">Sales</th><th class="num">% Chg</th><th class="num">Surplus</th><th class="num">True Profit / (Loss)</th></tr></thead>
+          <tbody id="leadershipTrendTable"></tbody>
+        </table>
+      </div>
+
+      <div class="section" style="margin-top:20px;">
+        <h2>Narrative for the Board</h2>
+        <div id="leadershipNarrative" style="font-size:13.5px;line-height:1.75;color:var(--white);"></div>
+        <button class="btn-ghost" style="margin-top:14px;" onclick="downloadLeadershipReport()">Download Board Report (PDF)</button>
+      </div>
+    </div>
   </main>
 </div>
 
@@ -19268,12 +19307,13 @@ function showView(v){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
-  const titles = {dashboard:'Dashboard', analysis:'Analysis', forecast:'Forecast', revenue:'Revenue', expenses:'Expenses', achievers:'Achievers', suppliers:'Suppliers', budget:'Budget', payroll:'Staff & Payroll', assets:'Assets', investors:'Investors', reserves:'Reserves', balancesheet:'Balance Sheet', pnl:'Profit & Loss', cashflow:'Cashflow'};
+  const titles = {dashboard:'Dashboard', analysis:'Analysis', forecast:'Forecast', revenue:'Revenue', expenses:'Expenses', achievers:'Achievers', suppliers:'Suppliers', budget:'Budget', payroll:'Staff & Payroll', assets:'Assets', investors:'Investors', reserves:'Reserves', balancesheet:'Balance Sheet', pnl:'Profit & Loss', cashflow:'Cashflow', leadership:'Leadership Report'};
   document.getElementById('pageTitle').textContent = titles[v];
-  const subs = {dashboard:'Today · '+new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}), analysis:'Financial health, alerts, and break-even — everything for deciding what to do next', forecast:'Projected sales, expenses, and cash — model a scenario and see where it leads', revenue:'Daily cash receipts', expenses:'Cost recording by category', achievers:'Who buys from you, and how often', suppliers:"Who you pay, and what's outstanding", budget:'Planned vs actual, by category', payroll:'Staff records, basic pay, bonus, and payslips', assets:'Straight-line depreciation register', investors:'Amounts in, returns due, and maturity', reserves:'Automatic 10%+10% profit allocation', balancesheet:'Generated, not hand-maintained', pnl:'Generated from recorded transactions', cashflow:'Inflow vs outflow, and gross margin over time'};
+  const subs = {dashboard:'Today · '+new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}), analysis:'Financial health, alerts, and break-even — everything for deciding what to do next', forecast:'Projected sales, expenses, and cash — model a scenario and see where it leads', revenue:'Daily cash receipts', expenses:'Cost recording by category', achievers:'Who buys from you, and how often', suppliers:"Who you pay, and what's outstanding", budget:'Planned vs actual, by category', payroll:'Staff records, basic pay, bonus, and payslips', assets:'Straight-line depreciation register', investors:'Amounts in, returns due, and maturity', reserves:'Automatic 10%+10% profit allocation', balancesheet:'Generated, not hand-maintained', pnl:'Generated from recorded transactions', cashflow:'Inflow vs outflow, and gross margin over time', leadership:'Monthly board-style summary — percentages, month-over-month, and true profit after fixed costs'};
   document.getElementById('pageSub').textContent = subs[v];
   if(v==='analysis'){ renderProductTable(); renderFixedCostTable(); calcBE(); drawHealthRing(lastHealthScore); renderBriefing(); renderGrowthAnalysis(); }
   if(v==='forecast') renderForecast();
+  if(v==='leadership') renderLeadershipReport();
   if(v==='achievers') renderAchievers();
   if(v==='suppliers') renderSuppliers();
   if(v==='budget') renderBudget();
@@ -19772,6 +19812,18 @@ function renderDashboard(){
   const juneSurplus = monthly2026[5].surplus;
   const surplusDelta = juneSurplus!==0 ? ((jul.surplus-juneSurplus)/Math.abs(juneSurplus)*100) : 0;
   document.getElementById('kpiSurplusDelta').innerHTML = `<span class="${surplusDelta>=0?'up':'down'}">${surplusDelta>=0?'▲':'▼'} ${Math.abs(surplusDelta).toFixed(0)}% vs June</span>`;
+
+  // True Profit/(Loss): surplus alone can look like spare cash even when fixed costs
+  // (salaries, depreciation, etc — costs that don't move with sales volume) haven't been
+  // covered yet. This nets fixed costs out of surplus so the dashboard shows the real position.
+  const fcTotal = computeBE().fc;
+  const trueProfit = jul.surplus - fcTotal;
+  const tpEl = document.getElementById('kpiTrueProfit');
+  tpEl.textContent = (trueProfit>=0?'Profit ':'Loss ')+'GH₵'+Math.abs(trueProfit).toLocaleString(undefined,{maximumFractionDigits:0});
+  tpEl.style.color = trueProfit>=0 ? 'var(--green)' : 'var(--red)';
+  const juneTrueProfit = juneSurplus - fcTotal;
+  const tpDelta = juneTrueProfit!==0 ? ((trueProfit-juneTrueProfit)/Math.abs(juneTrueProfit)*100) : 0;
+  document.getElementById('kpiTrueProfitDelta').innerHTML = `<span class="${tpDelta>=0?'up':'down'}">${tpDelta>=0?'▲':'▼'} ${Math.abs(tpDelta).toFixed(0)}% vs June</span> <span class="muted">· Fixed costs GH₵${fcTotal.toLocaleString(undefined,{maximumFractionDigits:0})}</span>`;
   const salesDelta = ((jul.sales-monthly2026[5].sales)/monthly2026[5].sales*100) || 0;
   document.getElementById('kpiSalesDelta').innerHTML = `<span class="${salesDelta>=0?'up':'down'}">${salesDelta>=0?'▲':'▼'} ${Math.abs(salesDelta).toFixed(0)}% vs June</span>`;
   document.getElementById('kpiExpDelta').innerHTML = `<span class="muted">vs GH₵${monthly2026[5].exp.toLocaleString(undefined,{maximumFractionDigits:0})} in June</span>`;
@@ -20390,6 +20442,141 @@ function downloadBriefing(){
   });
   doc.save(`Sash-Afrique-Finance-Briefing-${new Date().toISOString().slice(0,10)}.pdf`);
 }
+/* ---------------- LEADERSHIP / BOARD REPORT ---------------- */
+// Same underlying numbers as the Finance Head Briefing, but reframed for a board audience:
+// every figure carries a % change against last month, and Surplus is split out from
+// True Profit/(Loss) so leadership never mistakes surplus (before fixed costs) for the
+// real bottom line.
+function buildLeadershipData(){
+  const jul = julyTotals();
+  const be = computeBE();
+  const fc = be.fc;
+  const progress = be.breakEvenRevenue>0 ? Math.min(100, jul.sales/be.breakEvenRevenue*100) : 0;
+  const june = monthly2026[monthly2026.length-1]; // last complete actual month
+  const r = computeRatios(jul);
+  const trueProfitNow = jul.surplus - fc;
+  const trueProfitPrev = june.surplus - fc;
+  const revGrowth = june.sales>0 ? (jul.sales-june.sales)/june.sales*100 : 0;
+  const expGrowth = june.exp>0 ? (jul.exp-june.exp)/june.exp*100 : 0;
+  const surplusGrowth = june.surplus!==0 ? (jul.surplus-june.surplus)/Math.abs(june.surplus)*100 : 0;
+  const trueProfitGrowth = trueProfitPrev!==0 ? (trueProfitNow-trueProfitPrev)/Math.abs(trueProfitPrev)*100 : 0;
+  const netMarginNow = jul.sales>0 ? jul.surplus/jul.sales*100 : null;
+  const trueMarginNow = jul.sales>0 ? trueProfitNow/jul.sales*100 : null;
+  const receivables = baseReceivables + jul.receivablesNew;
+  return {jul, fc, be, progress, june, r, trueProfitNow, trueProfitPrev, revGrowth, expGrowth, surplusGrowth, trueProfitGrowth, netMarginNow, trueMarginNow, receivables};
+}
+function lrPct(v, decimals){
+  if(v===null || v===undefined || isNaN(v)) return '—';
+  return (v>=0?'+':'')+v.toFixed(decimals===undefined?0:decimals)+'%';
+}
+function lrMoney(v){ return 'GH₵'+v.toLocaleString(undefined,{maximumFractionDigits:0}); }
+function buildLeadershipNarrative(d){
+  const words = (v, decimals) => v===null||v===undefined||isNaN(v) ? 'flat' : (v>=0?'up ':'down ')+Math.abs(v).toFixed(decimals===undefined?0:decimals)+'%';
+  const paras = [];
+  paras.push(`Sales this month came in at ${lrMoney(d.jul.sales)}, ${words(d.revGrowth)} versus last month. Against ${lrMoney(d.jul.exp)} in recorded expenses (${words(d.expGrowth)}), that leaves a surplus of ${lrMoney(Math.abs(d.jul.surplus))}, a movement of ${words(d.surplusGrowth)} on last month's surplus.`);
+  paras.push(`Surplus on its own overstates the cash position: once the ${lrMoney(d.fc)} in fixed monthly costs — salaries, depreciation and other commitments that don't move with sales volume — is taken out, the true result is a ${d.trueProfitNow>=0?'profit':'loss'} of ${lrMoney(Math.abs(d.trueProfitNow))}, ${words(d.trueProfitGrowth)} versus last month's true ${d.trueProfitPrev>=0?'profit':'loss'} of ${lrMoney(Math.abs(d.trueProfitPrev))}. This is the number the board should treat as the bottom line, not the surplus figure.`);
+  paras.push(`Net margin (surplus as a share of sales) stands at ${d.netMarginNow===null?'not meaningful this month':d.netMarginNow.toFixed(1)+'%'}, while true profit margin — after fixed costs — is ${d.trueMarginNow===null?'not meaningful this month':d.trueMarginNow.toFixed(1)+'%'}. The business has covered ${d.progress.toFixed(0)}% of the revenue needed to break even this month, and outstanding receivables stand at ${lrMoney(d.receivables)}.`);
+
+  const actions = [];
+  if(d.trueProfitNow<0) actions.push('The business is running below fixed-cost coverage this month — leadership should decide whether to prioritise a sales push, a review of the fixed cost base, or both.');
+  if(d.revGrowth<-10) actions.push(`Revenue is down ${Math.abs(d.revGrowth).toFixed(0)}% on last month — worth a board-level view on whether this is seasonal or requires a pipeline intervention.`);
+  if(d.progress<100) actions.push(`Break-even has not yet been reached this month (${d.progress.toFixed(0)}% covered) — flag if additional working capital support is needed to bridge the gap.`);
+  if(actions.length===0) actions.push('No board-level intervention flagged this month — performance is tracking within a healthy range.');
+  return {paras, actions};
+}
+function renderLeadershipReport(){
+  const d = buildLeadershipData();
+
+  document.getElementById('lrRevGrowth').textContent = lrPct(d.revGrowth);
+  document.getElementById('lrNetMargin').textContent = d.netMarginNow===null?'—':d.netMarginNow.toFixed(1)+'%';
+  document.getElementById('lrTrueMargin').textContent = d.trueMarginNow===null?'—':d.trueMarginNow.toFixed(1)+'%';
+  document.getElementById('lrBECoverage').textContent = d.progress.toFixed(0)+'%';
+
+  const scorecardRows = [
+    ['Sales', lrMoney(d.jul.sales), lrMoney(d.june.sales), lrPct(d.revGrowth)],
+    ['Expenses', lrMoney(d.jul.exp), lrMoney(d.june.exp), lrPct(d.expGrowth)],
+    ['Surplus (before fixed costs)', lrMoney(d.jul.surplus), lrMoney(d.june.surplus), lrPct(d.surplusGrowth)],
+    ['Fixed Costs', lrMoney(d.fc), lrMoney(d.fc), '0%'],
+    ['True Profit / (Loss)', lrMoney(d.trueProfitNow), lrMoney(d.trueProfitPrev), lrPct(d.trueProfitGrowth)],
+  ];
+  document.getElementById('leadershipScorecard').innerHTML = scorecardRows.map(([label,now,prev,chg])=>{
+    const good = chg==='0%' || chg.startsWith('+');
+    return `<tr><td>${label}</td><td class="num">${now}</td><td class="num">${prev}</td><td class="num" style="color:${good?'var(--green)':'var(--red)'}">${chg}</td></tr>`;
+  }).join('');
+
+  const trend = monthly2026.map(m=>({m:m.m, sales:m.sales, surplus:m.surplus, trueProfit:m.surplus-d.fc}));
+  trend.push({m:'July (mtd)', sales:d.jul.sales, surplus:d.jul.surplus, trueProfit:d.trueProfitNow});
+  document.getElementById('leadershipTrendTable').innerHTML = trend.map((row,i)=>{
+    const prevSales = i>0 ? trend[i-1].sales : null;
+    const chgVal = prevSales ? (row.sales-prevSales)/prevSales*100 : null;
+    const chg = lrPct(chgVal);
+    const chgColor = chgVal===null ? 'var(--muted)' : (chgVal>=0?'var(--green)':'var(--red)');
+    return `<tr><td>${row.m}</td><td class="num">${lrMoney(row.sales)}</td><td class="num" style="color:${chgColor}">${chg}</td><td class="num" style="color:${row.surplus>=0?'var(--green)':'var(--red)'}">${lrMoney(row.surplus)}</td><td class="num" style="color:${row.trueProfit>=0?'var(--green)':'var(--red)'}">${row.trueProfit>=0?'Profit':'Loss'} ${lrMoney(Math.abs(row.trueProfit))}</td></tr>`;
+  }).join('');
+
+  document.getElementById('leadershipHeadline').innerHTML =
+    `<p style="margin:0;">${d.trueProfitNow>=0?'The business is operating profitably':'The business is currently operating at a loss'} once fixed costs are accounted for — this month's true position is a <b>${d.trueProfitNow>=0?'profit':'loss'} of ${lrMoney(Math.abs(d.trueProfitNow))}</b>, ${lrPct(d.trueProfitGrowth)} versus last month.</p>`;
+
+  const {paras, actions} = buildLeadershipNarrative(d);
+  document.getElementById('leadershipNarrative').innerHTML = paras.map(p=>`<p style="margin:0 0 12px;">${p}</p>`).join('') +
+    `<p style="margin:16px 0 8px;font-weight:600;color:var(--gold);">Recommended actions for the board</p>` +
+    `<ul style="margin:0;padding-left:20px;">${actions.map(a=>`<li style="margin-bottom:6px;">${a}</li>`).join('')}</ul>`;
+}
+function downloadLeadershipReport(){
+  const d = buildLeadershipData();
+  const {paras, actions} = buildLeadershipNarrative(d);
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({unit:'pt', format:'a4'});
+  const gold=[250,178,2], black=[10,10,10];
+  doc.setFillColor(...black); doc.rect(0,0,595,100,'F');
+  doc.setFillColor(...gold); doc.rect(0,100,595,4,'F');
+  const logoW=76, logoH=logoW*188/267;
+  doc.addImage(LOGO_DATA_URI, 'PNG', 40, (100-logoH)/2, logoW, logoH);
+  doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(255,255,255);
+  doc.text('MONTHLY REPORT TO LEADERSHIP', 555, 45, {align:'right'});
+  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(200,200,200);
+  doc.text(new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}), 555, 62, {align:'right'});
+
+  let y=140;
+  doc.setTextColor(20,20,20); doc.setFont('helvetica','bold'); doc.setFontSize(13);
+  doc.text('Scorecard', 40, y); y+=24;
+  const rows=[
+    ['Sales', lrMoney(d.jul.sales), lrMoney(d.june.sales), lrPct(d.revGrowth)],
+    ['Expenses', lrMoney(d.jul.exp), lrMoney(d.june.exp), lrPct(d.expGrowth)],
+    ['Surplus (before fixed costs)', lrMoney(d.jul.surplus), lrMoney(d.june.surplus), lrPct(d.surplusGrowth)],
+    ['Fixed Costs', lrMoney(d.fc), lrMoney(d.fc), '0%'],
+    ['True Profit / (Loss)', lrMoney(d.trueProfitNow), lrMoney(d.trueProfitPrev), lrPct(d.trueProfitGrowth)],
+  ];
+  doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(140,140,140);
+  doc.text('Metric',40,y); doc.text('This Month',260,y); doc.text('Last Month',370,y); doc.text('% Change',480,y); y+=18;
+  rows.forEach(([label,now,prev,chg])=>{
+    doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(30,30,30);
+    doc.text(label,40,y); doc.text(now,260,y); doc.text(prev,370,y); doc.text(chg,480,y); y+=19;
+  });
+  y+=10;
+  doc.setDrawColor(230,230,230); doc.line(40,y,555,y); y+=26;
+
+  doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(20,20,20);
+  doc.text('Narrative', 40, y); y+=20;
+  doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(30,30,30);
+  paras.forEach(p=>{
+    const lines = doc.splitTextToSize(p, 515);
+    lines.forEach(line=>{ doc.text(line,40,y); y+=15; if(y>760){doc.addPage(); y=50;} });
+    y+=8;
+  });
+  y+=6;
+  doc.setDrawColor(230,230,230); doc.line(40,y,555,y); y+=26;
+  doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(180,120,0);
+  doc.text('Recommended Actions for the Board', 40, y); y+=22;
+  doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(30,30,30);
+  actions.forEach(a=>{
+    const lines = doc.splitTextToSize('• '+a, 515);
+    lines.forEach(line=>{ doc.text(line,40,y); y+=16; if(y>770){doc.addPage(); y=50;} });
+    y+=6;
+  });
+  doc.save(`Sash-Afrique-Leadership-Report-${new Date().toISOString().slice(0,10)}.pdf`);
+}
+
 const MONTH_NAMES_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 function monthlyLedgerAgg(prefix){
   const rev = revenueEntries.filter(r=>r.date.startsWith(prefix));
