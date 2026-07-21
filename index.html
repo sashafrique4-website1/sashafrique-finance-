@@ -19793,7 +19793,13 @@ function computeCashBalance(){
   // (matching its label); all revenue counts, since achievers only ever pay by MoMo/Bank.
   const cashIn = revenueEntries.filter(r=>r.status!=='outstanding').reduce((s,r)=>s+r.amount,0);
   const cashOut = expenseEntries.filter(e=>e.method!=='Cash').reduce((s,e)=>s+e.amount,0);
-  return OPENING_CASH_BALANCE + cashIn - cashOut;
+  // Investor repayments are a return of capital, not an operating expense — they must NEVER
+  // be logged as an Expense entry (that would wrongly depress Surplus/True Profit/margins).
+  // Instead, marking an investor "repaid" records repaidMethod/repaidDate on the investor record
+  // itself, and that cash outflow is pulled in here directly — moving Cash Balance without ever
+  // touching expenseEntries, so P&L, break-even and the Leadership Report stay unaffected.
+  const investorRepaymentsCash = investors.filter(i=>i.status==='repaid' && i.repaidMethod!=='Cash').reduce((s,i)=>s+i.returnAmt,0);
+  return OPENING_CASH_BALANCE + cashIn - cashOut - investorRepaymentsCash;
 }
 function renderDashboard(){
   const jul = julyTotals();
@@ -19988,7 +19994,16 @@ function addInvestor(){
   renderInvestors(); renderDashboard();
 }
 function markRepaid(id){
-  const i = investors.find(x=>x.id===id); if(i) i.status='repaid';
+  const i = investors.find(x=>x.id===id); if(!i) return;
+  if(!confirm(`Mark ${i.name}'s repayment of GH₵${i.returnAmt.toLocaleString()} as paid?\n\nThis removes it from Investor Liability on the Balance Sheet and records the cash leaving your account — it will NOT be added to Expenses or affect Surplus/True Profit, since repaying capital isn't an operating cost.`)) return;
+  const dateInput = prompt('Repayment date (YYYY-MM-DD):', new Date().toISOString().slice(0,10));
+  if(dateInput===null) return; // cancelled
+  const methodInput = prompt('Paid via — type Bank, MTN MoMo, or Cash:', 'MTN MoMo');
+  if(methodInput===null) return; // cancelled
+  i.status='repaid';
+  i.repaidDate = dateInput.trim() || new Date().toISOString().slice(0,10);
+  i.repaidMethod = methodInput.trim() || 'MTN MoMo';
+  syncEntity('update','investors', id, i);
   renderInvestors(); renderDashboard();
 }
 function removeInvestor(id){ investors = investors.filter(i=>i.id!==id); syncEntity('delete','investors', id); renderInvestors(); renderDashboard(); }
@@ -20002,7 +20017,7 @@ function renderInvestors(){
     return `<tr>
       <td>${i.name}</td><td class="num">GH₵${i.invested.toLocaleString()}</td><td class="num">GH₵${i.returnAmt.toLocaleString()}</td>
       <td>${i.startDate}</td><td>${maturityDate(i).toISOString().slice(0,10)}</td>
-      <td class="num">${status==='Repaid' ? '—' : days}</td>
+      <td class="num">${status==='Repaid' ? (i.repaidDate ? `Paid ${i.repaidDate}${i.repaidMethod?' ('+i.repaidMethod+')':''}` : '—') : days}</td>
       <td><span class="tag ${tagClass}">${status}</span></td>
       <td style="white-space:nowrap;">${status!=='Repaid' ? `<button class="btn-ghost" style="padding:6px 10px;font-size:11.5px;" onclick="markRepaid(${i.id})">Mark repaid</button>` : ''} <button class="row-del" onclick="removeInvestor(${i.id})">✕</button></td>
     </tr>`;
