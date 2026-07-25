@@ -120,6 +120,16 @@
   .tag.deposit{background:#2b230f;color:var(--gold);}
   .tag.outstanding{background:#2b0f0f;color:var(--red);}
 
+  .role-hide{display:none!important;}
+  .kpi-bar{background:#222;border-radius:20px;height:8px;overflow:hidden;margin-top:10px;}
+  .kpi-bar-fill{height:100%;background:var(--gold);transition:width .3s;}
+  .clock-big-btn{width:100%;padding:16px;border-radius:10px;border:none;font-weight:700;font-size:15px;cursor:pointer;margin-top:4px;font-family:inherit;transition:.15s;}
+  .clock-big-btn.clock-in{background:var(--green);color:#06210c;}
+  .clock-big-btn.clock-in:hover{opacity:.9;}
+  .clock-big-btn.clock-out{background:var(--red);color:#fff;}
+  .clock-big-btn.clock-out:hover{opacity:.9;}
+  .clock-big-btn.clock-done{background:var(--panel-2);color:var(--muted);cursor:default;border:1px solid var(--line);}
+
   .form-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:14px;}
   .form-row .field{margin:0;}
   .form-row select, .form-row input{
@@ -186,10 +196,14 @@
     <div class="login-mark"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQsAAAC8CAMAAABYM3sZAAAAolBMVEUAAADzuFL///8AAAP5vFSdejpNPBz5wFg8LxXvt1XyuFSAGj8AdWI1NTVXV1dTFSkEcWBzGjoDRDkICAirq6vNzc1zc3OTk5Pi4uLPz8+kpKTq6uq/v7/uulIgICAXFxfY2NhFRUUWDQefn59jY2OKiop0dHSCgoJjSiUsLCy1tbUuLi729vZbW1sNBQnn5+dLS0tpaWkCDgwfGAwXFAw7OzuniwmzAAAEFUlEQVR4nO3bfXebNhQG8Lubbem6OVuHMOJlRkwBYkyWeJu//1fblcCW7eactDulxs3z+yPIQhB4JAQnOEQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAF/QzXQufWrwf93Qw/ufpvPHn5c+wc8gWXz/3XSQBbJAFt9YFhO6vaYsiN79MKXo0qc3I1f2uDXhc+eVJQGfRLr1tY59I33/+y/Occ2Cncfjqg8/i1+/7oFdgM/it+OaIYu74ypkESCLAFkEyCJAFgGyCJBFgCwCZBEgiwBZBMgiQBYBsgiQRYAsAmQRIIsAWQTIIkAWwVvK4uSdwO7NvhOI/nZOqlbOydviv7yvelwAcDn//Dila3rzfEMPt1O6ru8oPdy+n87VfXcN3+MbIIsAWQRu7pzw651XlsW/76Z06fObj2t6ugAAgPkrrbKblqjFv1KIjMo+KvtLH0ZQFdrYl7pGJec13XJYRk+cD6XF6V9/X6aex8J6ESpN5bJYW2uT8vMOeDr3XLQ25+3Ha9LurKLmsQuTnNZDKSoW9CpuxoIyR5V38pnWSVLPJ4s8cz8z33Xlaqz0y7gbC4emajwrG481+7NYfTyuorApj8OJsnTcrByyaGglfbCcTRZ8vy/Znjl3L38SZo53FCslFc+HlvdMnXYFzdynZJqEY2IZF3e5tF9xRJ0fSWktV4ORNvsI9lkM29FOlnp1+pppHnRejSUrfWS5pEd+pl0hWbAqqeBDSxPL9ODOoOpMVZF+SmVL3lHFKiKrJYui8HtMaMVdScv9XLLPoircdqXkRm0+xyw2OfdFc/jY11SPs0LsR/RhgO8kIpcHjWPd+DEi4yL17brjLArfrNbDloddKNdS+Wm35jDgZuQu09xv/A0ltdrSmvPEXeyxcmvzdmxWuDN7ZGk4ZKH9bUayGCaR5+MsertdLrfNOKZOs5DfIMo5jgtvnRs5zW7bJL0caZTlMhP4uTNkUXK9WSxWuQtoyKJ21S4LfymsT7LQRmttXhwXfT1UzjULki5M/TBIfa9R1auzLCyP6DyL3g+Q7XEWh8HknWZh/G4XM7xGNnrnFnIBGHdzLdlS5W6QXXyWBScUCbc8y0L5+cVIFtaV1tKi9lfHZrzTHh5efBYtuwuwmGEWq5TjJDEyYhtWjc1zK4epmkxutelxFvX+fpJJITNSeBrmC4ky7+v2SUkWERu3C1lR9Enb8XA1EJvYuZdf0cq6lJPWFLO8Rh47Y5SbEe9j3UWtPG5sCx3LkbZ+aCfDMdf7UV+qBW3dh8RPE8p1sjXpkiQLWnW6K2u3opGd7c8285R8TLS7EGtjaso+4YH1WrlnLRiskcVB1L7eBgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAODb9x+4SnWlG1jWIQAAAABJRU5ErkJggg==" alt="Sash Afrique Ltd"></div>
     <h1>Financial OS</h1>
     <p>Sign in to view the business's live financial position.</p>
-    <div class="field"><label>Password</label><input id="loginPass" type="password" placeholder="••••••••" onkeydown="if(event.key===&#39;Enter&#39;)doLogin()"></div>
+    <div class="role-toggle">
+      <button type="button" class="active" id="roleBtnAdmin" onclick="setLoginRole(&#39;admin&#39;)">Admin</button>
+      <button type="button" id="roleBtnOfficer" onclick="setLoginRole(&#39;officer&#39;)">Officer</button>
+    </div>
+    <div class="field"><label id="loginPassLabel">Password</label><input id="loginPass" type="password" placeholder="••••••••" onkeydown="if(event.key===&#39;Enter&#39;)doLogin()"></div>
     <div id="loginError" style="color:var(--red);font-size:12.5px;margin:-8px 0 10px;display:none;">Incorrect password. Try again.</div>
     <button class="btn-gold" onclick="doLogin()">Sign in</button>
-    <div class="login-note">Password-gated prototype. Real per-user authentication ships with the backend.</div>
+    <div class="login-note" id="loginNote">Password-gated prototype. Real per-user authentication ships with the backend.</div>
   </div>
 </div>
 
@@ -201,6 +215,7 @@
       <button class="nav-btn active" data-view="dashboard" onclick="showView(&#39;dashboard&#39;)">Dashboard</button>
       <button class="nav-btn" data-view="analysis" onclick="showView(&#39;analysis&#39;)">Analysis</button>
       <button class="nav-btn" data-view="forecast" onclick="showView(&#39;forecast&#39;)">Forecast</button>
+      <button class="nav-btn" data-view="staffops" id="navStaffOps" onclick="showView(&#39;staffops&#39;)">Staff Ops</button>
 
       <div class="nav-group collapsed" id="navgroup-money">
         <button class="nav-group-toggle" onclick="toggleNavGroup(&#39;navgroup-money&#39;)">Money <span class="chev">▾</span></button>
@@ -232,7 +247,6 @@
       <div class="nav-group collapsed" id="navgroup-reports">
         <button class="nav-group-toggle" onclick="toggleNavGroup(&#39;navgroup-reports&#39;)">Reports <span class="chev">▾</span></button>
         <div class="nav-group-body">
-          <button class="nav-btn" data-view="leadership" onclick="showView(&#39;leadership&#39;)">Leadership Report</button>
           <button class="nav-btn" data-view="cashflow" onclick="showView(&#39;cashflow&#39;)">Cashflow</button>
           <button class="nav-btn" data-view="balancesheet" onclick="showView(&#39;balancesheet&#39;)">Balance Sheet</button>
           <button class="nav-btn" data-view="pnl" onclick="showView(&#39;pnl&#39;)">P&amp;L</button>
@@ -261,7 +275,6 @@
       </div>
 
       <div class="grid cards" style="margin-top:16px;">
-        <div class="card card-gold"><div class="label">True Profit / (Loss) — after Fixed Costs</div><div class="value" id="kpiTrueProfit">—</div><div class="delta" id="kpiTrueProfitDelta"><span class="muted">Surplus minus fixed costs</span></div></div>
         <div class="card"><div class="label">Monthly Profit Target — Jul</div><div class="value" id="kpiTarget">GH₵-674 / GH₵8,000</div><div class="delta" id="kpiTargetBar"><div style="background:#222;border-radius:20px;height:6px;margin-top:6px;overflow:hidden;"><div style="width:0%;background:var(--gold);height:100%;"></div></div><span class="muted" style="font-size:11px;">0% of target</span></div></div>
         <div class="card"><div class="label">Break-even Progress</div><div class="value" id="kpiBE">3% of BEP</div><div class="delta" id="kpiBEBar"><div style="background:#222;border-radius:20px;height:6px;margin-top:6px;overflow:hidden;"><div style="width:2.723910836737553%;background:var(--gold);height:100%;"></div></div></div></div>
         <div class="card"><div class="label">Outstanding Receivables</div><div class="value" id="kpiReceivables">GH₵1,240</div><div class="delta">3 achievers with balances</div></div>
@@ -17220,6 +17233,74 @@
       </div>
     </div>
 
+    <!-- STAFF OPS -->
+    <div class="view" id="view-staffops">
+
+      <!-- Officer (Benjamin) self-service view -->
+      <div id="staffops-officer">
+        <div class="grid cards">
+          <div class="card card-gold">
+            <div class="label">Today's Status</div>
+            <div class="value" id="officerClockStatus" style="font-size:18px;">Not clocked in</div>
+            <div class="delta" id="officerClockTimes" style="color:var(--muted);">&nbsp;</div>
+          </div>
+          <div class="card">
+            <div class="label" id="officerKpiLabel">Performance Target</div>
+            <div class="value" id="officerKpiValue">0 / 0</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" id="officerKpiBar" style="width:0%;"></div></div>
+          </div>
+        </div>
+
+        <div class="section">
+          <h2>Clock In / Out</h2>
+          <button class="clock-big-btn clock-in" id="officerClockBtn" onclick="officerClockAction()">Clock In</button>
+          <div class="pill-note" style="margin-top:14px;">Self-service — clock in when you start work and clock out when you're done. Your admin can see this log and your performance progress.</div>
+        </div>
+
+        <div class="section">
+          <h2>My Attendance</h2>
+          <table>
+            <thead><tr><th>Date</th><th>Clock In</th><th>Clock Out</th><th class="num">Hours</th></tr></thead>
+            <tbody id="officerAttendanceTable"><tr><td colspan="4" style="color:var(--muted);">No attendance recorded yet.</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="section">
+          <h2>Staff Cost <small>All staff, current payroll</small></h2>
+          <canvas id="staffCostChartOfficer" height="90"></canvas>
+        </div>
+      </div>
+
+      <!-- Admin view of Benjamin -->
+      <div id="staffops-admin">
+        <div class="section">
+          <h2>Benjamin — Attendance Log</h2>
+          <table>
+            <thead><tr><th>Date</th><th>Clock In</th><th>Clock Out</th><th class="num">Hours</th></tr></thead>
+            <tbody id="adminAttendanceTable"><tr><td colspan="4" style="color:var(--muted);">No attendance recorded yet.</td></tr></tbody>
+          </table>
+        </div>
+
+        <div class="section">
+          <h2>Benjamin — Performance Target</h2>
+          <div class="form-row">
+            <div class="field"><label>KPI Label</label><input id="kpiLabelInput" placeholder="e.g. Orders fulfilled"></div>
+            <div class="field"><label>Target</label><input id="kpiTargetInput" type="number" placeholder="0"></div>
+            <div class="field"><label>Actual</label><input id="kpiActualInput" type="number" placeholder="0"></div>
+            <div class="field" style="display:flex;align-items:flex-end;"><button class="btn-small" onclick="saveOfficerKpi()">Save</button></div>
+          </div>
+          <div class="kv"><span id="adminKpiLabelText">Performance Target</span><b id="adminKpiValueText">0 / 0</b></div>
+          <div class="kpi-bar"><div class="kpi-bar-fill" id="adminKpiBar" style="width:0%;"></div></div>
+          <div class="pill-note" style="margin-top:14px;">Custom KPI — set any target and update actual progress as it comes in. Benjamin sees this same target and progress bar on his own screen, read-only.</div>
+        </div>
+
+        <div class="section">
+          <h2>Staff Cost <small>All staff, current payroll</small></h2>
+          <canvas id="staffCostChartAdmin" height="90"></canvas>
+        </div>
+      </div>
+    </div>
+
     <!-- ASSETS -->
     <div class="view" id="view-assets">
       <div class="section">
@@ -17497,43 +17578,6 @@
         </table>
       </div>
     </div>
-
-    <!-- LEADERSHIP REPORT -->
-    <div class="view" id="view-leadership">
-      <div class="section">
-        <h2>Report to Leadership <small>CFO-style summary for the board — framed in percentages and month-over-month movement</small></h2>
-        <div id="leadershipHeadline" style="font-size:14.5px;line-height:1.7;color:var(--white);"></div>
-      </div>
-
-      <div class="grid cards" style="margin-top:16px;">
-        <div class="card"><div class="label">Revenue Growth (MoM)</div><div class="value" id="lrRevGrowth">—</div><div class="delta muted">vs previous month</div></div>
-        <div class="card"><div class="label">Net Margin</div><div class="value" id="lrNetMargin">—</div><div class="delta muted">Surplus ÷ Sales</div></div>
-        <div class="card card-gold"><div class="label">True Profit Margin</div><div class="value" id="lrTrueMargin">—</div><div class="delta muted">After fixed costs, ÷ Sales</div></div>
-        <div class="card"><div class="label">Break-even Coverage</div><div class="value" id="lrBECoverage">—</div><div class="delta muted">of break-even revenue, this month</div></div>
-      </div>
-
-      <div class="section" style="margin-top:20px;">
-        <h2>Month-over-Month Scorecard</h2>
-        <table>
-          <thead><tr><th>Metric</th><th class="num">This Month</th><th class="num">Last Month</th><th class="num">% Change</th></tr></thead>
-          <tbody id="leadershipScorecard"></tbody>
-        </table>
-      </div>
-
-      <div class="section" style="margin-top:20px;">
-        <h2>Trend Since January <small>Sales, Surplus and True Profit/(Loss) — % change shown month to month</small></h2>
-        <table>
-          <thead><tr><th>Month</th><th class="num">Sales</th><th class="num">% Chg</th><th class="num">Surplus</th><th class="num">True Profit / (Loss)</th></tr></thead>
-          <tbody id="leadershipTrendTable"></tbody>
-        </table>
-      </div>
-
-      <div class="section" style="margin-top:20px;">
-        <h2>Narrative for the Board</h2>
-        <div id="leadershipNarrative" style="font-size:13.5px;line-height:1.75;color:var(--white);"></div>
-        <button class="btn-ghost" style="margin-top:14px;" onclick="downloadLeadershipReport()">Download Board Report (PDF)</button>
-      </div>
-    </div>
   </main>
 </div>
 
@@ -17608,6 +17652,7 @@ function applyBackendData(data){
   if(data.reserves && data.reserves.length) reserveWithdrawals = data.reserves;
   if(data.products && data.products.length) products = data.products;
   if(data.fixedCosts && data.fixedCosts.length) fixedCosts = data.fixedCosts;
+  if(data.attendance && data.attendance.length) attendanceLog = data.attendance;
 }
 
 async function initBackendSync(){
@@ -17622,7 +17667,8 @@ async function initBackendSync(){
       setSyncStatus('First run — uploading existing data…');
       const seedPayload = {
         revenue: revenueEntries, expenses: expenseEntries, achievers, suppliers,
-        budgets, staff, assets, investors, reserves: reserveWithdrawals, products, fixedCosts
+        budgets, staff, assets, investors, reserves: reserveWithdrawals, products, fixedCosts,
+        attendance: attendanceLog
       };
       const seedRes = await apiSeedAll(seedPayload);
       if(!seedRes || !seedRes.ok) throw new Error('seeding failed');
@@ -17718,8 +17764,15 @@ let nextBudgetId = 8;
 let staff = [
   {id:'SA-001', name:'Enoch Kofi Boateng (Naboat)', position:'Founder', dept:'Admin', dateEmployed:'2024-01-01', basic:0, allowances:0, deductions:0, threshold:'N'},
   {id:'SA-002', name:'Esther Minta', position:'Marketing Officer / Achiever Support Specialist', dept:'Marketing', dateEmployed:'2025-03-01', basic:800, allowances:200, deductions:0, threshold:'Y'},
+  {id:'SA-003', name:'Benjamin', position:'Operations Officer', dept:'Logistics', dateEmployed:'2026-01-01', basic:0, allowances:0, deductions:0, threshold:'N', kpiLabel:'Orders fulfilled', kpiTarget:50, kpiActual:0},
 ];
-let nextStaffNum = 3;
+let nextStaffNum = 4;
+
+// Officer role is fixed to a single named staff member for now (self-service login below).
+const OFFICER_STAFF_ID = 'SA-003';
+
+// Clock in/out log: {id, staffId, date, clockIn, clockOut, hours}
+let attendanceLog = [];
 
 let assets = [
   {id:'AST-001', label:'Motor Vehicle', category:'Vehicle', datePurchased:'2026-01-06', cost:10900, life:5, status:'In use', location:'Ashaiman workshop'},
@@ -19281,15 +19334,37 @@ let expenseEntries = [
 expenseEntries.forEach((e,i)=>{ if(e.id===undefined) e.id = i+1; });
 
 /* ---------------- LOGIN ---------------- */
+// Two roles for now: Admin (full access) and Officer (Benjamin — self-service only).
+// Real per-user authentication ships with the backend; this is a password-gated prototype.
+const ADMIN_PASSWORD = 'admin2026';
+const OFFICER_PASSWORD = 'finance2026';
+let loginRole = 'admin';
+let currentRole = 'admin';
+let currentStaffId = null;
+
+function setLoginRole(r){
+  loginRole = r;
+  document.getElementById('roleBtnAdmin').classList.toggle('active', r==='admin');
+  document.getElementById('roleBtnOfficer').classList.toggle('active', r==='officer');
+  document.getElementById('loginPassLabel').textContent = r==='officer' ? 'Officer Password' : 'Password';
+  document.getElementById('loginNote').textContent = r==='officer'
+    ? 'Officer sign-in — Benjamin gets access to his own attendance and performance only.'
+    : 'Password-gated prototype. Real per-user authentication ships with the backend.';
+}
+
 function doLogin(){
   const pass = document.getElementById('loginPass').value;
-  if(pass !== 'finance2026'){
+  const expected = loginRole==='officer' ? OFFICER_PASSWORD : ADMIN_PASSWORD;
+  if(pass !== expected){
     document.getElementById('loginError').style.display = 'block';
     return;
   }
   document.getElementById('loginError').style.display = 'none';
   document.getElementById('login').style.display='none';
   document.getElementById('app').classList.add('show');
+  currentRole = loginRole;
+  currentStaffId = loginRole==='officer' ? OFFICER_STAFF_ID : null;
+  applyRoleUI();
   document.getElementById('todayDate').textContent = new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'});
   const today = new Date().toISOString().slice(0,10);
   document.getElementById('rDate').value = today;
@@ -19297,6 +19372,27 @@ function doLogin(){
   populateCategories();
   renderAll();
   initBackendSync();
+  if(currentRole==='officer') showView('staffops');
+}
+
+// Officer role only ever sees Staff Ops — everything else in the sidebar is hidden,
+// and the two Staff Ops sub-views (admin vs officer) are toggled by display, not re-rendered
+// separately, so the same attendance/KPI data feeds both.
+function applyRoleUI(){
+  const isOfficer = currentRole === 'officer';
+  document.querySelectorAll('#app > .sidebar > nav > .nav-btn').forEach(b=>{
+    if(b.dataset.view !== 'staffops') b.classList.toggle('role-hide', isOfficer);
+  });
+  document.querySelectorAll('#app > .sidebar > nav > .nav-group').forEach(g=>g.classList.toggle('role-hide', isOfficer));
+  const staffopsAdmin = document.getElementById('staffops-admin');
+  const staffopsOfficer = document.getElementById('staffops-officer');
+  if(staffopsAdmin) staffopsAdmin.style.display = isOfficer ? 'none' : '';
+  if(staffopsOfficer) staffopsOfficer.style.display = isOfficer ? '' : 'none';
+  const whoEl = document.getElementById('whoName');
+  if(whoEl){
+    const s = staff.find(x=>x.id===currentStaffId);
+    whoEl.textContent = isOfficer ? (s ? s.name : 'Officer') : 'Financial OS';
+  }
 }
 
 /* ---------------- NAV ---------------- */
@@ -19307,13 +19403,12 @@ function showView(v){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
-  const titles = {dashboard:'Dashboard', analysis:'Analysis', forecast:'Forecast', revenue:'Revenue', expenses:'Expenses', achievers:'Achievers', suppliers:'Suppliers', budget:'Budget', payroll:'Staff & Payroll', assets:'Assets', investors:'Investors', reserves:'Reserves', balancesheet:'Balance Sheet', pnl:'Profit & Loss', cashflow:'Cashflow', leadership:'Leadership Report'};
+  const titles = {dashboard:'Dashboard', analysis:'Analysis', forecast:'Forecast', revenue:'Revenue', expenses:'Expenses', achievers:'Achievers', suppliers:'Suppliers', budget:'Budget', payroll:'Staff & Payroll', assets:'Assets', investors:'Investors', reserves:'Reserves', balancesheet:'Balance Sheet', pnl:'Profit & Loss', cashflow:'Cashflow', staffops:'Staff Ops'};
   document.getElementById('pageTitle').textContent = titles[v];
-  const subs = {dashboard:'Today · '+new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}), analysis:'Financial health, alerts, and break-even — everything for deciding what to do next', forecast:'Projected sales, expenses, and cash — model a scenario and see where it leads', revenue:'Daily cash receipts', expenses:'Cost recording by category', achievers:'Who buys from you, and how often', suppliers:"Who you pay, and what's outstanding", budget:'Planned vs actual, by category', payroll:'Staff records, basic pay, bonus, and payslips', assets:'Straight-line depreciation register', investors:'Amounts in, returns due, and maturity', reserves:'Automatic 10%+10% profit allocation', balancesheet:'Generated, not hand-maintained', pnl:'Generated from recorded transactions', cashflow:'Inflow vs outflow, and gross margin over time', leadership:'Monthly board-style summary — percentages, month-over-month, and true profit after fixed costs'};
+  const subs = {dashboard:'Today · '+new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}), analysis:'Financial health, alerts, and break-even — everything for deciding what to do next', forecast:'Projected sales, expenses, and cash — model a scenario and see where it leads', revenue:'Daily cash receipts', expenses:'Cost recording by category', achievers:'Who buys from you, and how often', suppliers:"Who you pay, and what's outstanding", budget:'Planned vs actual, by category', payroll:'Staff records, basic pay, bonus, and payslips', assets:'Straight-line depreciation register', investors:'Amounts in, returns due, and maturity', reserves:'Automatic 10%+10% profit allocation', balancesheet:'Generated, not hand-maintained', pnl:'Generated from recorded transactions', cashflow:'Inflow vs outflow, and gross margin over time', staffops: currentRole==='officer' ? 'Your attendance, performance, and the team\'s staff cost' : 'Attendance, performance target, and staff cost for Benjamin'};
   document.getElementById('pageSub').textContent = subs[v];
   if(v==='analysis'){ renderProductTable(); renderFixedCostTable(); calcBE(); drawHealthRing(lastHealthScore); renderBriefing(); renderGrowthAnalysis(); }
   if(v==='forecast') renderForecast();
-  if(v==='leadership') renderLeadershipReport();
   if(v==='achievers') renderAchievers();
   if(v==='suppliers') renderSuppliers();
   if(v==='budget') renderBudget();
@@ -19323,6 +19418,7 @@ function showView(v){
   if(v==='reserves') renderReserves();
   if(v==='balancesheet') renderBalanceSheet();
   if(v==='cashflow') renderCashflowView();
+  if(v==='staffops') renderStaffOps();
 }
 
 /* ---------------- REVENUE ---------------- */
@@ -19725,6 +19821,125 @@ function generatePayslip(id){
   doc.save(`Payslip-${s.id}-${s.name.replace(/\s+/g,'_')}-Jul2026.pdf`);
 }
 
+/* ---------------- STAFF OPS (attendance + performance + staff cost) ---------------- */
+function todayStr(){ return new Date().toISOString().slice(0,10); }
+function nowTimeStr(){ return new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'}); }
+function computeHours(inStr, outStr){
+  const [ih,im] = inStr.split(':').map(Number);
+  const [oh,om] = outStr.split(':').map(Number);
+  let mins = (oh*60+om) - (ih*60+im);
+  if(mins<0) mins += 24*60; // guards against an overnight shift crossing midnight
+  return +(mins/60).toFixed(2);
+}
+function findOpenAttendance(staffId, date){
+  return attendanceLog.find(a=>a.staffId===staffId && a.date===date && !a.clockOut);
+}
+function attendanceForStaff(staffId){
+  return attendanceLog.filter(a=>a.staffId===staffId).slice().sort((a,b)=>a.date<b.date?1:-1);
+}
+
+// Self-service: Benjamin clicks the same button to clock in, then again to clock out.
+// Once a day is closed out, the button locks until the next calendar day.
+function officerClockAction(){
+  const date = todayStr();
+  let rec = findOpenAttendance(OFFICER_STAFF_ID, date);
+  if(rec){
+    rec.clockOut = nowTimeStr();
+    rec.hours = computeHours(rec.clockIn, rec.clockOut);
+    syncEntity('update','attendance', rec.id, rec);
+  } else {
+    const doneToday = attendanceLog.find(a=>a.staffId===OFFICER_STAFF_ID && a.date===date && a.clockOut);
+    if(doneToday){ renderStaffOps(); return; }
+    rec = {id:'ATT-'+Date.now(), staffId:OFFICER_STAFF_ID, date, clockIn:nowTimeStr(), clockOut:'', hours:0};
+    attendanceLog.push(rec);
+    syncEntity('add','attendance', rec);
+  }
+  renderStaffOps();
+}
+
+// Admin sets any label/target/actual for Benjamin's KPI — stored right on his staff record.
+function saveOfficerKpi(){
+  const s = staff.find(x=>x.id===OFFICER_STAFF_ID);
+  if(!s) return;
+  const label = document.getElementById('kpiLabelInput').value.trim();
+  s.kpiLabel = label || s.kpiLabel || 'Performance Target';
+  s.kpiTarget = parseFloat(document.getElementById('kpiTargetInput').value)||0;
+  s.kpiActual = parseFloat(document.getElementById('kpiActualInput').value)||0;
+  syncEntity('update','staff', s.id, s);
+  renderStaffOps();
+}
+
+let staffCostChartInstance;
+function renderStaffCostChart(canvasId){
+  const ctx = document.getElementById(canvasId);
+  // Skip while the canvas is hidden (role-toggled sub-view, or a different active nav view) —
+  // Chart.js can't size a 0x0 canvas. showView() calls this again once it's actually visible.
+  if(!ctx || ctx.offsetParent===null) return;
+  const rows = payrollComputed();
+  const labels = rows.map(s=>s.name.split(' ')[0]);
+  const data = rows.map(s=>s.gross);
+  if(staffCostChartInstance) staffCostChartInstance.destroy();
+  staffCostChartInstance = new Chart(ctx, {
+    type:'bar',
+    data:{labels, datasets:[{label:'Gross Pay (GH₵)', data, backgroundColor:'#FAB202'}]},
+    options:{plugins:{legend:{display:false}}, scales:{
+      x:{ticks:{color:'#9a9a95'}, grid:{color:'#1e1e1e'}},
+      y:{ticks:{color:'#9a9a95'}, grid:{color:'#1e1e1e'}}
+    }}
+  });
+}
+
+function renderStaffOps(){
+  const s = staff.find(x=>x.id===OFFICER_STAFF_ID);
+  const isOfficer = currentRole === 'officer';
+  const label = s?.kpiLabel || 'Performance Target';
+  const target = s?.kpiTarget || 0;
+  const actual = s?.kpiActual || 0;
+  const pct = target>0 ? Math.min(100, (actual/target*100)) : 0;
+
+  // Attendance — same underlying log feeds both the officer's own table and the admin's.
+  const rowsHtml = attendanceForStaff(OFFICER_STAFF_ID).map(a=>
+    `<tr><td>${a.date}</td><td>${a.clockIn||'—'}</td><td>${a.clockOut||'—'}</td><td class="num">${a.hours||'—'}</td></tr>`
+  ).join('') || '<tr><td colspan="4" style="color:var(--muted);">No attendance recorded yet.</td></tr>';
+  const officerTb = document.getElementById('officerAttendanceTable'); if(officerTb) officerTb.innerHTML = rowsHtml;
+  const adminTb = document.getElementById('adminAttendanceTable'); if(adminTb) adminTb.innerHTML = rowsHtml;
+
+  // KPI — officer's card is read-only, admin's panel is editable.
+  const oKpiLabel = document.getElementById('officerKpiLabel'); if(oKpiLabel) oKpiLabel.textContent = label;
+  const oKpiValue = document.getElementById('officerKpiValue'); if(oKpiValue) oKpiValue.textContent = `${actual} / ${target}`;
+  const oKpiBar = document.getElementById('officerKpiBar'); if(oKpiBar) oKpiBar.style.width = pct+'%';
+  const aKpiLabelText = document.getElementById('adminKpiLabelText'); if(aKpiLabelText) aKpiLabelText.textContent = label;
+  const aKpiValueText = document.getElementById('adminKpiValueText'); if(aKpiValueText) aKpiValueText.textContent = `${actual} / ${target}`;
+  const aKpiBar = document.getElementById('adminKpiBar'); if(aKpiBar) aKpiBar.style.width = pct+'%';
+  const kpiLabelInput = document.getElementById('kpiLabelInput'); if(kpiLabelInput && document.activeElement!==kpiLabelInput) kpiLabelInput.value = label;
+  const kpiTargetInput = document.getElementById('kpiTargetInput'); if(kpiTargetInput && document.activeElement!==kpiTargetInput) kpiTargetInput.value = target;
+  const kpiActualInput = document.getElementById('kpiActualInput'); if(kpiActualInput && document.activeElement!==kpiActualInput) kpiActualInput.value = actual;
+
+  // Clock button state: not clocked in today / currently clocked in / done for the day.
+  const openRec = findOpenAttendance(OFFICER_STAFF_ID, todayStr());
+  const doneToday = attendanceLog.find(a=>a.staffId===OFFICER_STAFF_ID && a.date===todayStr() && a.clockOut);
+  const btn = document.getElementById('officerClockBtn');
+  const statusEl = document.getElementById('officerClockStatus');
+  const timesEl = document.getElementById('officerClockTimes');
+  if(btn && statusEl && timesEl){
+    if(openRec){
+      statusEl.textContent = 'Clocked in';
+      timesEl.textContent = 'Since '+openRec.clockIn;
+      btn.textContent = 'Clock Out'; btn.className = 'clock-big-btn clock-out'; btn.disabled = false;
+    } else if(doneToday){
+      statusEl.textContent = 'Done for today';
+      timesEl.textContent = doneToday.clockIn+' – '+doneToday.clockOut+' ('+doneToday.hours+' hrs)';
+      btn.textContent = 'Clocked Out'; btn.className = 'clock-big-btn clock-done'; btn.disabled = true;
+    } else {
+      statusEl.textContent = 'Not clocked in';
+      timesEl.textContent = '\u00A0';
+      btn.textContent = 'Clock In'; btn.className = 'clock-big-btn clock-in'; btn.disabled = false;
+    }
+  }
+
+  renderStaffCostChart(isOfficer ? 'staffCostChartOfficer' : 'staffCostChartAdmin');
+}
+
 /* ---------------- ASSETS ---------------- */
 function monthsBetween(d1,d2){ return Math.max(0,(d2.getFullYear()-d1.getFullYear())*12 + (d2.getMonth()-d1.getMonth())); }
 function assetComputed(){
@@ -19793,13 +20008,7 @@ function computeCashBalance(){
   // (matching its label); all revenue counts, since achievers only ever pay by MoMo/Bank.
   const cashIn = revenueEntries.filter(r=>r.status!=='outstanding').reduce((s,r)=>s+r.amount,0);
   const cashOut = expenseEntries.filter(e=>e.method!=='Cash').reduce((s,e)=>s+e.amount,0);
-  // Investor repayments are a return of capital, not an operating expense — they must NEVER
-  // be logged as an Expense entry (that would wrongly depress Surplus/True Profit/margins).
-  // Instead, marking an investor "repaid" records repaidMethod/repaidDate on the investor record
-  // itself, and that cash outflow is pulled in here directly — moving Cash Balance without ever
-  // touching expenseEntries, so P&L, break-even and the Leadership Report stay unaffected.
-  const investorRepaymentsCash = investors.filter(i=>i.status==='repaid' && i.repaidMethod!=='Cash').reduce((s,i)=>s+i.returnAmt,0);
-  return OPENING_CASH_BALANCE + cashIn - cashOut - investorRepaymentsCash;
+  return OPENING_CASH_BALANCE + cashIn - cashOut;
 }
 function renderDashboard(){
   const jul = julyTotals();
@@ -19818,18 +20027,6 @@ function renderDashboard(){
   const juneSurplus = monthly2026[5].surplus;
   const surplusDelta = juneSurplus!==0 ? ((jul.surplus-juneSurplus)/Math.abs(juneSurplus)*100) : 0;
   document.getElementById('kpiSurplusDelta').innerHTML = `<span class="${surplusDelta>=0?'up':'down'}">${surplusDelta>=0?'▲':'▼'} ${Math.abs(surplusDelta).toFixed(0)}% vs June</span>`;
-
-  // True Profit/(Loss): surplus alone can look like spare cash even when fixed costs
-  // (salaries, depreciation, etc — costs that don't move with sales volume) haven't been
-  // covered yet. This nets fixed costs out of surplus so the dashboard shows the real position.
-  const fcTotal = computeBE().fc;
-  const trueProfit = jul.surplus - fcTotal;
-  const tpEl = document.getElementById('kpiTrueProfit');
-  tpEl.textContent = (trueProfit>=0?'Profit ':'Loss ')+'GH₵'+Math.abs(trueProfit).toLocaleString(undefined,{maximumFractionDigits:0});
-  tpEl.style.color = trueProfit>=0 ? 'var(--green)' : 'var(--red)';
-  const juneTrueProfit = juneSurplus - fcTotal;
-  const tpDelta = juneTrueProfit!==0 ? ((trueProfit-juneTrueProfit)/Math.abs(juneTrueProfit)*100) : 0;
-  document.getElementById('kpiTrueProfitDelta').innerHTML = `<span class="${tpDelta>=0?'up':'down'}">${tpDelta>=0?'▲':'▼'} ${Math.abs(tpDelta).toFixed(0)}% vs June</span> <span class="muted">· Fixed costs GH₵${fcTotal.toLocaleString(undefined,{maximumFractionDigits:0})}</span>`;
   const salesDelta = ((jul.sales-monthly2026[5].sales)/monthly2026[5].sales*100) || 0;
   document.getElementById('kpiSalesDelta').innerHTML = `<span class="${salesDelta>=0?'up':'down'}">${salesDelta>=0?'▲':'▼'} ${Math.abs(salesDelta).toFixed(0)}% vs June</span>`;
   document.getElementById('kpiExpDelta').innerHTML = `<span class="muted">vs GH₵${monthly2026[5].exp.toLocaleString(undefined,{maximumFractionDigits:0})} in June</span>`;
@@ -19994,16 +20191,7 @@ function addInvestor(){
   renderInvestors(); renderDashboard();
 }
 function markRepaid(id){
-  const i = investors.find(x=>x.id===id); if(!i) return;
-  if(!confirm(`Mark ${i.name}'s repayment of GH₵${i.returnAmt.toLocaleString()} as paid?\n\nThis removes it from Investor Liability on the Balance Sheet and records the cash leaving your account — it will NOT be added to Expenses or affect Surplus/True Profit, since repaying capital isn't an operating cost.`)) return;
-  const dateInput = prompt('Repayment date (YYYY-MM-DD):', new Date().toISOString().slice(0,10));
-  if(dateInput===null) return; // cancelled
-  const methodInput = prompt('Paid via — type Bank, MTN MoMo, or Cash:', 'MTN MoMo');
-  if(methodInput===null) return; // cancelled
-  i.status='repaid';
-  i.repaidDate = dateInput.trim() || new Date().toISOString().slice(0,10);
-  i.repaidMethod = methodInput.trim() || 'MTN MoMo';
-  syncEntity('update','investors', id, i);
+  const i = investors.find(x=>x.id===id); if(i) i.status='repaid';
   renderInvestors(); renderDashboard();
 }
 function removeInvestor(id){ investors = investors.filter(i=>i.id!==id); syncEntity('delete','investors', id); renderInvestors(); renderDashboard(); }
@@ -20017,7 +20205,7 @@ function renderInvestors(){
     return `<tr>
       <td>${i.name}</td><td class="num">GH₵${i.invested.toLocaleString()}</td><td class="num">GH₵${i.returnAmt.toLocaleString()}</td>
       <td>${i.startDate}</td><td>${maturityDate(i).toISOString().slice(0,10)}</td>
-      <td class="num">${status==='Repaid' ? (i.repaidDate ? `Paid ${i.repaidDate}${i.repaidMethod?' ('+i.repaidMethod+')':''}` : '—') : days}</td>
+      <td class="num">${status==='Repaid' ? '—' : days}</td>
       <td><span class="tag ${tagClass}">${status}</span></td>
       <td style="white-space:nowrap;">${status!=='Repaid' ? `<button class="btn-ghost" style="padding:6px 10px;font-size:11.5px;" onclick="markRepaid(${i.id})">Mark repaid</button>` : ''} <button class="row-del" onclick="removeInvestor(${i.id})">✕</button></td>
     </tr>`;
@@ -20457,141 +20645,6 @@ function downloadBriefing(){
   });
   doc.save(`Sash-Afrique-Finance-Briefing-${new Date().toISOString().slice(0,10)}.pdf`);
 }
-/* ---------------- LEADERSHIP / BOARD REPORT ---------------- */
-// Same underlying numbers as the Finance Head Briefing, but reframed for a board audience:
-// every figure carries a % change against last month, and Surplus is split out from
-// True Profit/(Loss) so leadership never mistakes surplus (before fixed costs) for the
-// real bottom line.
-function buildLeadershipData(){
-  const jul = julyTotals();
-  const be = computeBE();
-  const fc = be.fc;
-  const progress = be.breakEvenRevenue>0 ? Math.min(100, jul.sales/be.breakEvenRevenue*100) : 0;
-  const june = monthly2026[monthly2026.length-1]; // last complete actual month
-  const r = computeRatios(jul);
-  const trueProfitNow = jul.surplus - fc;
-  const trueProfitPrev = june.surplus - fc;
-  const revGrowth = june.sales>0 ? (jul.sales-june.sales)/june.sales*100 : 0;
-  const expGrowth = june.exp>0 ? (jul.exp-june.exp)/june.exp*100 : 0;
-  const surplusGrowth = june.surplus!==0 ? (jul.surplus-june.surplus)/Math.abs(june.surplus)*100 : 0;
-  const trueProfitGrowth = trueProfitPrev!==0 ? (trueProfitNow-trueProfitPrev)/Math.abs(trueProfitPrev)*100 : 0;
-  const netMarginNow = jul.sales>0 ? jul.surplus/jul.sales*100 : null;
-  const trueMarginNow = jul.sales>0 ? trueProfitNow/jul.sales*100 : null;
-  const receivables = baseReceivables + jul.receivablesNew;
-  return {jul, fc, be, progress, june, r, trueProfitNow, trueProfitPrev, revGrowth, expGrowth, surplusGrowth, trueProfitGrowth, netMarginNow, trueMarginNow, receivables};
-}
-function lrPct(v, decimals){
-  if(v===null || v===undefined || isNaN(v)) return '—';
-  return (v>=0?'+':'')+v.toFixed(decimals===undefined?0:decimals)+'%';
-}
-function lrMoney(v){ return 'GH₵'+v.toLocaleString(undefined,{maximumFractionDigits:0}); }
-function buildLeadershipNarrative(d){
-  const words = (v, decimals) => v===null||v===undefined||isNaN(v) ? 'flat' : (v>=0?'up ':'down ')+Math.abs(v).toFixed(decimals===undefined?0:decimals)+'%';
-  const paras = [];
-  paras.push(`Sales this month came in at ${lrMoney(d.jul.sales)}, ${words(d.revGrowth)} versus last month. Against ${lrMoney(d.jul.exp)} in recorded expenses (${words(d.expGrowth)}), that leaves a surplus of ${lrMoney(Math.abs(d.jul.surplus))}, a movement of ${words(d.surplusGrowth)} on last month's surplus.`);
-  paras.push(`Surplus on its own overstates the cash position: once the ${lrMoney(d.fc)} in fixed monthly costs — salaries, depreciation and other commitments that don't move with sales volume — is taken out, the true result is a ${d.trueProfitNow>=0?'profit':'loss'} of ${lrMoney(Math.abs(d.trueProfitNow))}, ${words(d.trueProfitGrowth)} versus last month's true ${d.trueProfitPrev>=0?'profit':'loss'} of ${lrMoney(Math.abs(d.trueProfitPrev))}. This is the number the board should treat as the bottom line, not the surplus figure.`);
-  paras.push(`Net margin (surplus as a share of sales) stands at ${d.netMarginNow===null?'not meaningful this month':d.netMarginNow.toFixed(1)+'%'}, while true profit margin — after fixed costs — is ${d.trueMarginNow===null?'not meaningful this month':d.trueMarginNow.toFixed(1)+'%'}. The business has covered ${d.progress.toFixed(0)}% of the revenue needed to break even this month, and outstanding receivables stand at ${lrMoney(d.receivables)}.`);
-
-  const actions = [];
-  if(d.trueProfitNow<0) actions.push('The business is running below fixed-cost coverage this month — leadership should decide whether to prioritise a sales push, a review of the fixed cost base, or both.');
-  if(d.revGrowth<-10) actions.push(`Revenue is down ${Math.abs(d.revGrowth).toFixed(0)}% on last month — worth a board-level view on whether this is seasonal or requires a pipeline intervention.`);
-  if(d.progress<100) actions.push(`Break-even has not yet been reached this month (${d.progress.toFixed(0)}% covered) — flag if additional working capital support is needed to bridge the gap.`);
-  if(actions.length===0) actions.push('No board-level intervention flagged this month — performance is tracking within a healthy range.');
-  return {paras, actions};
-}
-function renderLeadershipReport(){
-  const d = buildLeadershipData();
-
-  document.getElementById('lrRevGrowth').textContent = lrPct(d.revGrowth);
-  document.getElementById('lrNetMargin').textContent = d.netMarginNow===null?'—':d.netMarginNow.toFixed(1)+'%';
-  document.getElementById('lrTrueMargin').textContent = d.trueMarginNow===null?'—':d.trueMarginNow.toFixed(1)+'%';
-  document.getElementById('lrBECoverage').textContent = d.progress.toFixed(0)+'%';
-
-  const scorecardRows = [
-    ['Sales', lrMoney(d.jul.sales), lrMoney(d.june.sales), lrPct(d.revGrowth)],
-    ['Expenses', lrMoney(d.jul.exp), lrMoney(d.june.exp), lrPct(d.expGrowth)],
-    ['Surplus (before fixed costs)', lrMoney(d.jul.surplus), lrMoney(d.june.surplus), lrPct(d.surplusGrowth)],
-    ['Fixed Costs', lrMoney(d.fc), lrMoney(d.fc), '0%'],
-    ['True Profit / (Loss)', lrMoney(d.trueProfitNow), lrMoney(d.trueProfitPrev), lrPct(d.trueProfitGrowth)],
-  ];
-  document.getElementById('leadershipScorecard').innerHTML = scorecardRows.map(([label,now,prev,chg])=>{
-    const good = chg==='0%' || chg.startsWith('+');
-    return `<tr><td>${label}</td><td class="num">${now}</td><td class="num">${prev}</td><td class="num" style="color:${good?'var(--green)':'var(--red)'}">${chg}</td></tr>`;
-  }).join('');
-
-  const trend = monthly2026.map(m=>({m:m.m, sales:m.sales, surplus:m.surplus, trueProfit:m.surplus-d.fc}));
-  trend.push({m:'July (mtd)', sales:d.jul.sales, surplus:d.jul.surplus, trueProfit:d.trueProfitNow});
-  document.getElementById('leadershipTrendTable').innerHTML = trend.map((row,i)=>{
-    const prevSales = i>0 ? trend[i-1].sales : null;
-    const chgVal = prevSales ? (row.sales-prevSales)/prevSales*100 : null;
-    const chg = lrPct(chgVal);
-    const chgColor = chgVal===null ? 'var(--muted)' : (chgVal>=0?'var(--green)':'var(--red)');
-    return `<tr><td>${row.m}</td><td class="num">${lrMoney(row.sales)}</td><td class="num" style="color:${chgColor}">${chg}</td><td class="num" style="color:${row.surplus>=0?'var(--green)':'var(--red)'}">${lrMoney(row.surplus)}</td><td class="num" style="color:${row.trueProfit>=0?'var(--green)':'var(--red)'}">${row.trueProfit>=0?'Profit':'Loss'} ${lrMoney(Math.abs(row.trueProfit))}</td></tr>`;
-  }).join('');
-
-  document.getElementById('leadershipHeadline').innerHTML =
-    `<p style="margin:0;">${d.trueProfitNow>=0?'The business is operating profitably':'The business is currently operating at a loss'} once fixed costs are accounted for — this month's true position is a <b>${d.trueProfitNow>=0?'profit':'loss'} of ${lrMoney(Math.abs(d.trueProfitNow))}</b>, ${lrPct(d.trueProfitGrowth)} versus last month.</p>`;
-
-  const {paras, actions} = buildLeadershipNarrative(d);
-  document.getElementById('leadershipNarrative').innerHTML = paras.map(p=>`<p style="margin:0 0 12px;">${p}</p>`).join('') +
-    `<p style="margin:16px 0 8px;font-weight:600;color:var(--gold);">Recommended actions for the board</p>` +
-    `<ul style="margin:0;padding-left:20px;">${actions.map(a=>`<li style="margin-bottom:6px;">${a}</li>`).join('')}</ul>`;
-}
-function downloadLeadershipReport(){
-  const d = buildLeadershipData();
-  const {paras, actions} = buildLeadershipNarrative(d);
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({unit:'pt', format:'a4'});
-  const gold=[250,178,2], black=[10,10,10];
-  doc.setFillColor(...black); doc.rect(0,0,595,100,'F');
-  doc.setFillColor(...gold); doc.rect(0,100,595,4,'F');
-  const logoW=76, logoH=logoW*188/267;
-  doc.addImage(LOGO_DATA_URI, 'PNG', 40, (100-logoH)/2, logoW, logoH);
-  doc.setFont('helvetica','bold'); doc.setFontSize(16); doc.setTextColor(255,255,255);
-  doc.text('MONTHLY REPORT TO LEADERSHIP', 555, 45, {align:'right'});
-  doc.setFont('helvetica','normal'); doc.setFontSize(10); doc.setTextColor(200,200,200);
-  doc.text(new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}), 555, 62, {align:'right'});
-
-  let y=140;
-  doc.setTextColor(20,20,20); doc.setFont('helvetica','bold'); doc.setFontSize(13);
-  doc.text('Scorecard', 40, y); y+=24;
-  const rows=[
-    ['Sales', lrMoney(d.jul.sales), lrMoney(d.june.sales), lrPct(d.revGrowth)],
-    ['Expenses', lrMoney(d.jul.exp), lrMoney(d.june.exp), lrPct(d.expGrowth)],
-    ['Surplus (before fixed costs)', lrMoney(d.jul.surplus), lrMoney(d.june.surplus), lrPct(d.surplusGrowth)],
-    ['Fixed Costs', lrMoney(d.fc), lrMoney(d.fc), '0%'],
-    ['True Profit / (Loss)', lrMoney(d.trueProfitNow), lrMoney(d.trueProfitPrev), lrPct(d.trueProfitGrowth)],
-  ];
-  doc.setFont('helvetica','bold'); doc.setFontSize(9.5); doc.setTextColor(140,140,140);
-  doc.text('Metric',40,y); doc.text('This Month',260,y); doc.text('Last Month',370,y); doc.text('% Change',480,y); y+=18;
-  rows.forEach(([label,now,prev,chg])=>{
-    doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(30,30,30);
-    doc.text(label,40,y); doc.text(now,260,y); doc.text(prev,370,y); doc.text(chg,480,y); y+=19;
-  });
-  y+=10;
-  doc.setDrawColor(230,230,230); doc.line(40,y,555,y); y+=26;
-
-  doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(20,20,20);
-  doc.text('Narrative', 40, y); y+=20;
-  doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(30,30,30);
-  paras.forEach(p=>{
-    const lines = doc.splitTextToSize(p, 515);
-    lines.forEach(line=>{ doc.text(line,40,y); y+=15; if(y>760){doc.addPage(); y=50;} });
-    y+=8;
-  });
-  y+=6;
-  doc.setDrawColor(230,230,230); doc.line(40,y,555,y); y+=26;
-  doc.setFont('helvetica','bold'); doc.setFontSize(13); doc.setTextColor(180,120,0);
-  doc.text('Recommended Actions for the Board', 40, y); y+=22;
-  doc.setFont('helvetica','normal'); doc.setFontSize(10.5); doc.setTextColor(30,30,30);
-  actions.forEach(a=>{
-    const lines = doc.splitTextToSize('• '+a, 515);
-    lines.forEach(line=>{ doc.text(line,40,y); y+=16; if(y>770){doc.addPage(); y=50;} });
-    y+=6;
-  });
-  doc.save(`Sash-Afrique-Leadership-Report-${new Date().toISOString().slice(0,10)}.pdf`);
-}
-
 const MONTH_NAMES_FULL = ['January','February','March','April','May','June','July','August','September','October','November','December'];
 function monthlyLedgerAgg(prefix){
   const rev = revenueEntries.filter(r=>r.date.startsWith(prefix));
@@ -20801,6 +20854,7 @@ function renderAll(){
   renderDashboard();
   renderBriefing();
   renderPNL();
+  renderStaffOps();
 }
 </script>
 
