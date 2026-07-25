@@ -264,6 +264,7 @@
       </div>
       <div class="who">Sash Afrique Ltd — <b id="whoName">Financial OS</b></div>
     </div>
+    <div id="syncBanner" style="display:none;background:#3a1414;border:1px solid var(--red);color:#ffb3b3;padding:10px 14px;border-radius:8px;font-size:13px;margin:-14px 0 20px;">⚠ Could not save to the server — your last change may only be stored on this device. Check your connection and try again.</div>
 
     <!-- DASHBOARD -->
     <div class="view active" id="view-dashboard">
@@ -282,7 +283,44 @@
         <div class="card"><div class="label">Reserves (Emergency + Growth)</div><div class="value" id="kpiReserves">GH₵7,104</div><div class="delta">10% + 10% of net profit, YTD</div></div>
       </div>
 
-      <div class="section">
+      <!-- Officer: self-service clock in/out + own performance, front and center on login -->
+      <div class="section" style="margin-top:16px;" id="dashStaffOpsOfficer">
+        <h2>Clock In / Out <small>Self-service attendance</small></h2>
+        <div class="grid cards">
+          <div class="card card-gold">
+            <div class="label">Today's Status</div>
+            <div class="value" id="dashClockStatus" style="font-size:18px;">Not clocked in</div>
+            <div class="delta" id="dashClockTimes" style="color:var(--muted);">&nbsp;</div>
+          </div>
+          <div class="card">
+            <div class="label" id="dashKpiLabel">Performance Target</div>
+            <div class="value" id="dashKpiValue">0 / 0</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" id="dashKpiBar" style="width:0%;"></div></div>
+          </div>
+        </div>
+        <button class="clock-big-btn clock-in" id="dashClockBtn" onclick="officerClockAction()" style="max-width:280px;margin-top:14px;">Clock In</button>
+        <div class="pill-note" style="margin-top:14px;">Clock in when you start work, clock out when you're done. Full history and staff cost breakdown are on the Staff Ops page.</div>
+      </div>
+
+      <!-- Admin: read-only snapshot of Benjamin's status + performance, with a shortcut to manage it -->
+      <div class="section" style="margin-top:16px;" id="dashStaffOpsAdmin">
+        <h2>Staff Attendance &amp; Performance <small>Benjamin — Operations Officer</small></h2>
+        <div class="grid cards">
+          <div class="card card-gold">
+            <div class="label">Today's Status</div>
+            <div class="value" id="dashAdminClockStatus" style="font-size:18px;">Not clocked in</div>
+            <div class="delta" id="dashAdminClockTimes" style="color:var(--muted);">&nbsp;</div>
+          </div>
+          <div class="card">
+            <div class="label" id="dashAdminKpiLabel">Performance Target</div>
+            <div class="value" id="dashAdminKpiValue">0 / 0</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" id="dashAdminKpiBar" style="width:0%;"></div></div>
+          </div>
+        </div>
+        <button class="btn-ghost" style="margin-top:14px;" onclick="showView('staffops')">Manage attendance &amp; set KPI →</button>
+      </div>
+
+      <div class="section" style="margin-top:16px;">
         <h2>Monthly Trend <small>Sales vs Surplus, Jan–Jul 2026</small></h2>
         <canvas id="trendChart" height="264" style="box-sizing: border-box; display: block; height: 264px; width: 991px;" width="991"></canvas>
       </div>
@@ -17592,9 +17630,12 @@ const API_URL = 'https://script.google.com/macros/s/AKfycbwZRxvyt57mhbTtK2O8Omd6
 
 function setSyncStatus(text, isError){
   const el = document.getElementById('syncStatus');
-  if(!el) return;
-  el.textContent = text;
-  el.style.color = isError ? 'var(--red)' : '#555';
+  if(el){
+    el.textContent = text;
+    el.style.color = isError ? 'var(--red)' : '#555';
+  }
+  const banner = document.getElementById('syncBanner');
+  if(banner) banner.style.display = isError ? '' : 'none';
 }
 
 async function apiGet(params){
@@ -19383,6 +19424,10 @@ function applyRoleUI(){
   const staffopsOfficer = document.getElementById('staffops-officer');
   if(staffopsAdmin) staffopsAdmin.style.display = isOfficer ? 'none' : '';
   if(staffopsOfficer) staffopsOfficer.style.display = isOfficer ? '' : 'none';
+  const dashStaffopsAdmin = document.getElementById('dashStaffOpsAdmin');
+  const dashStaffopsOfficer = document.getElementById('dashStaffOpsOfficer');
+  if(dashStaffopsAdmin) dashStaffopsAdmin.style.display = isOfficer ? 'none' : '';
+  if(dashStaffopsOfficer) dashStaffopsOfficer.style.display = isOfficer ? '' : 'none';
   const whoEl = document.getElementById('whoName');
   if(whoEl){
     const s = staff.find(x=>x.id===currentStaffId);
@@ -19754,7 +19799,14 @@ function addStaff(){
   ['pName','pPosition','pDateEmployed','pBasic','pAllow','pDeduct'].forEach(id=>document.getElementById(id).value='');
   renderPayroll();
 }
-function removeStaff(id){ staff = staff.filter(s=>s.id!==id); syncEntity('delete','staff', id); renderPayroll(); }
+function removeStaff(id){
+  const s = staff.find(x=>x.id===id);
+  if(!confirm(`Remove ${s ? s.name : 'this staff member'} from payroll? This can't be undone.`)) return;
+  staff = staff.filter(x=>x.id!==id);
+  syncEntity('delete','staff', id);
+  renderPayroll();
+  renderStaffOps();
+}
 function saveStaffRow(i){
   const s = window._staffRows[i]; if(!s) return;
   s.basic = parseFloat(document.getElementById('stfBasic-'+i).value)||0;
@@ -19765,6 +19817,7 @@ function saveStaffRow(i){
   const btn = document.getElementById('stfSaveBtn-'+i);
   if(btn){ const old = btn.textContent; btn.textContent = 'Saved ✓'; setTimeout(()=>{ if(btn) btn.textContent = old; }, 1200); }
   renderPayroll();
+  renderStaffOps();
 }
 function renderPayroll(){
   const tb = document.getElementById('payrollTable');
@@ -19925,6 +19978,13 @@ function renderStaffOps(){
   const aKpiLabelText = document.getElementById('adminKpiLabelText'); if(aKpiLabelText) aKpiLabelText.textContent = label;
   const aKpiValueText = document.getElementById('adminKpiValueText'); if(aKpiValueText) aKpiValueText.textContent = `${actual} / ${target}`;
   const aKpiBar = document.getElementById('adminKpiBar'); if(aKpiBar) aKpiBar.style.width = pct+'%';
+  // Dashboard widgets (officer's own clock/KPI card, and admin's read-only snapshot of Benjamin's)
+  const dKpiLabel = document.getElementById('dashKpiLabel'); if(dKpiLabel) dKpiLabel.textContent = label;
+  const dKpiValue = document.getElementById('dashKpiValue'); if(dKpiValue) dKpiValue.textContent = `${actual} / ${target}`;
+  const dKpiBar = document.getElementById('dashKpiBar'); if(dKpiBar) dKpiBar.style.width = pct+'%';
+  const dAdminKpiLabel = document.getElementById('dashAdminKpiLabel'); if(dAdminKpiLabel) dAdminKpiLabel.textContent = label;
+  const dAdminKpiValue = document.getElementById('dashAdminKpiValue'); if(dAdminKpiValue) dAdminKpiValue.textContent = `${actual} / ${target}`;
+  const dAdminKpiBar = document.getElementById('dashAdminKpiBar'); if(dAdminKpiBar) dAdminKpiBar.style.width = pct+'%';
   const kpiLabelInput = document.getElementById('kpiLabelInput'); if(kpiLabelInput && document.activeElement!==kpiLabelInput) kpiLabelInput.value = label;
   const kpiTargetInput = document.getElementById('kpiTargetInput'); if(kpiTargetInput && document.activeElement!==kpiTargetInput) kpiTargetInput.value = target;
   const kpiActualInput = document.getElementById('kpiActualInput'); if(kpiActualInput && document.activeElement!==kpiActualInput) kpiActualInput.value = actual;
@@ -19935,20 +19995,24 @@ function renderStaffOps(){
   const btn = document.getElementById('officerClockBtn');
   const statusEl = document.getElementById('officerClockStatus');
   const timesEl = document.getElementById('officerClockTimes');
-  if(btn && statusEl && timesEl){
-    if(openRec){
-      statusEl.textContent = 'Clocked in';
-      timesEl.textContent = 'Since '+openRec.clockIn;
-      btn.textContent = 'Clock Out'; btn.className = 'clock-big-btn clock-out'; btn.disabled = false;
-    } else if(doneToday){
-      statusEl.textContent = 'Done for today';
-      timesEl.textContent = doneToday.clockIn+' – '+doneToday.clockOut+' ('+doneToday.hours+' hrs)';
-      btn.textContent = 'Clocked Out'; btn.className = 'clock-big-btn clock-done'; btn.disabled = true;
-    } else {
-      statusEl.textContent = 'Not clocked in';
-      timesEl.textContent = '\u00A0';
-      btn.textContent = 'Clock In'; btn.className = 'clock-big-btn clock-in'; btn.disabled = false;
-    }
+  const dashBtn = document.getElementById('dashClockBtn');
+  const dashStatusEl = document.getElementById('dashClockStatus');
+  const dashTimesEl = document.getElementById('dashClockTimes');
+  const dashAdminStatusEl = document.getElementById('dashAdminClockStatus');
+  const dashAdminTimesEl = document.getElementById('dashAdminClockTimes');
+  if(openRec){
+    if(btn && statusEl && timesEl){ statusEl.textContent = 'Clocked in'; timesEl.textContent = 'Since '+openRec.clockIn; btn.textContent = 'Clock Out'; btn.className = 'clock-big-btn clock-out'; btn.disabled = false; }
+    if(dashBtn && dashStatusEl && dashTimesEl){ dashStatusEl.textContent = 'Clocked in'; dashTimesEl.textContent = 'Since '+openRec.clockIn; dashBtn.textContent = 'Clock Out'; dashBtn.className = 'clock-big-btn clock-out'; dashBtn.disabled = false; }
+    if(dashAdminStatusEl && dashAdminTimesEl){ dashAdminStatusEl.textContent = 'Clocked in'; dashAdminTimesEl.textContent = 'Since '+openRec.clockIn; }
+  } else if(doneToday){
+    const summary = doneToday.clockIn+' – '+doneToday.clockOut+' ('+doneToday.hours+' hrs)';
+    if(btn && statusEl && timesEl){ statusEl.textContent = 'Done for today'; timesEl.textContent = summary; btn.textContent = 'Clocked Out'; btn.className = 'clock-big-btn clock-done'; btn.disabled = true; }
+    if(dashBtn && dashStatusEl && dashTimesEl){ dashStatusEl.textContent = 'Done for today'; dashTimesEl.textContent = summary; dashBtn.textContent = 'Clocked Out'; dashBtn.className = 'clock-big-btn clock-done'; dashBtn.disabled = true; }
+    if(dashAdminStatusEl && dashAdminTimesEl){ dashAdminStatusEl.textContent = 'Done for today'; dashAdminTimesEl.textContent = summary; }
+  } else {
+    if(btn && statusEl && timesEl){ statusEl.textContent = 'Not clocked in'; timesEl.textContent = '\u00A0'; btn.textContent = 'Clock In'; btn.className = 'clock-big-btn clock-in'; btn.disabled = false; }
+    if(dashBtn && dashStatusEl && dashTimesEl){ dashStatusEl.textContent = 'Not clocked in'; dashTimesEl.textContent = '\u00A0'; dashBtn.textContent = 'Clock In'; dashBtn.className = 'clock-big-btn clock-in'; dashBtn.disabled = false; }
+    if(dashAdminStatusEl && dashAdminTimesEl){ dashAdminStatusEl.textContent = 'Not clocked in'; dashAdminTimesEl.textContent = '\u00A0'; }
   }
 
   renderStaffCostChart(isOfficer ? 'staffCostChartOfficer' : 'staffCostChartAdmin');
