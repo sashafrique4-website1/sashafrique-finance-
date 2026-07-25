@@ -17202,12 +17202,12 @@
           </div>
         </div>
         <button class="btn-small" onclick="addStaff()">Add staff member</button>
-        <div class="pill-note">Bonus rule: 20% of basic pay if the performance threshold is met, GH₵0 if not. SSNIT/PAYE deductions plug into the Deductions field for now — statutory calculation is on the roadmap.</div>
+        <div class="pill-note">Bonus rule: 20% of basic pay if the performance threshold is met, GH₵0 if not. Basic, allowances, deductions, and threshold are editable any time directly in the table below — update them and click Save. SSNIT/PAYE deductions plug into the Deductions field for now — statutory calculation is on the roadmap.</div>
       </div>
       <div class="section">
         <h2>Payroll <small>Jul 2026</small></h2>
         <table>
-          <thead><tr><th>Staff ID</th><th>Name</th><th>Role</th><th>Dept</th><th class="num">Basic</th><th class="num">Bonus</th><th class="num">Allowances</th><th class="num">Deductions</th><th class="num">Gross</th><th class="num">Net</th><th></th></tr></thead>
+          <thead><tr><th>Staff ID</th><th>Name</th><th>Role</th><th>Dept</th><th class="num">Basic</th><th>Threshold Met?</th><th class="num">Bonus</th><th class="num">Allowances</th><th class="num">Deductions</th><th class="num">Gross</th><th class="num">Net</th><th></th></tr></thead>
           <tbody id="payrollTable"><tr>
     <td>SA-001</td><td>Enoch Kofi Boateng (Naboat)</td><td>Founder</td><td>Admin</td>
     <td class="num">GH₵0</td>
@@ -17282,16 +17282,16 @@
         </div>
 
         <div class="section">
-          <h2>Benjamin — Performance Target</h2>
-          <div class="form-row">
-            <div class="field"><label>KPI Label</label><input id="kpiLabelInput" placeholder="e.g. Orders fulfilled"></div>
-            <div class="field"><label>Target</label><input id="kpiTargetInput" type="number" placeholder="0"></div>
-            <div class="field"><label>Actual</label><input id="kpiActualInput" type="number" placeholder="0"></div>
-            <div class="field" style="display:flex;align-items:flex-end;"><button class="btn-small" onclick="saveOfficerKpi()">Save</button></div>
-          </div>
+          <h2>Benjamin — Performance KPI</h2>
           <div class="kv"><span id="adminKpiLabelText">Performance Target</span><b id="adminKpiValueText">0 / 0</b></div>
           <div class="kpi-bar"><div class="kpi-bar-fill" id="adminKpiBar" style="width:0%;"></div></div>
-          <div class="pill-note" style="margin-top:14px;">Custom KPI — set any target and update actual progress as it comes in. Benjamin sees this same target and progress bar on his own screen, read-only.</div>
+          <div class="form-row" style="margin-top:18px;">
+            <div class="field"><label>KPI Name</label><input id="kpiLabelInput" placeholder="e.g. Sales Collected (GH₵), Orders Fulfilled, Deliveries Made"></div>
+            <div class="field"><label>Target</label><input id="kpiTargetInput" type="number" placeholder="e.g. 5000"></div>
+            <div class="field"><label>Actual (so far)</label><input id="kpiActualInput" type="number" placeholder="e.g. 2300"></div>
+            <div class="field" style="display:flex;align-items:flex-end;"><button class="btn-small" onclick="saveOfficerKpi()">Save</button></div>
+          </div>
+          <div class="pill-note" style="margin-top:14px;">This is a free-form KPI — set it to whatever real number matters right now: a sales target in GH₵, a count of orders/deliveries, collections made, etc. Update "Actual" as often as you like to track progress. Benjamin sees this same name, numbers, and progress bar on his own screen — read-only.</div>
         </div>
 
         <div class="section">
@@ -19334,8 +19334,9 @@ let expenseEntries = [
 expenseEntries.forEach((e,i)=>{ if(e.id===undefined) e.id = i+1; });
 
 /* ---------------- LOGIN ---------------- */
-// Two roles for now: Admin (full access) and Officer (Benjamin — self-service only).
-// Real per-user authentication ships with the backend; this is a password-gated prototype.
+// Two roles for now: Admin and Officer (Benjamin). Both get the FULL app — every page,
+// same as before — the role only changes what shows on the Staff Ops page (Benjamin's
+// own self-service clock-in/KPI vs the admin's editable view of his attendance/KPI).
 const ADMIN_PASSWORD = 'admin2026';
 const OFFICER_PASSWORD = 'finance2026';
 let loginRole = 'admin';
@@ -19348,7 +19349,7 @@ function setLoginRole(r){
   document.getElementById('roleBtnOfficer').classList.toggle('active', r==='officer');
   document.getElementById('loginPassLabel').textContent = r==='officer' ? 'Officer Password' : 'Password';
   document.getElementById('loginNote').textContent = r==='officer'
-    ? 'Officer sign-in — Benjamin gets access to his own attendance and performance only.'
+    ? 'Officer sign-in — full access, plus your own attendance & performance on Staff Ops.'
     : 'Password-gated prototype. Real per-user authentication ships with the backend.';
 }
 
@@ -19372,18 +19373,12 @@ function doLogin(){
   populateCategories();
   renderAll();
   initBackendSync();
-  if(currentRole==='officer') showView('staffops');
 }
 
-// Officer role only ever sees Staff Ops — everything else in the sidebar is hidden,
-// and the two Staff Ops sub-views (admin vs officer) are toggled by display, not re-rendered
-// separately, so the same attendance/KPI data feeds both.
+// Only the Staff Ops page changes by role — Benjamin's own self-service clock-in/KPI view,
+// vs the admin's editable view of his attendance/KPI. Every other page is identical for both.
 function applyRoleUI(){
   const isOfficer = currentRole === 'officer';
-  document.querySelectorAll('#app > .sidebar > nav > .nav-btn').forEach(b=>{
-    if(b.dataset.view !== 'staffops') b.classList.toggle('role-hide', isOfficer);
-  });
-  document.querySelectorAll('#app > .sidebar > nav > .nav-group').forEach(g=>g.classList.toggle('role-hide', isOfficer));
   const staffopsAdmin = document.getElementById('staffops-admin');
   const staffopsOfficer = document.getElementById('staffops-officer');
   if(staffopsAdmin) staffopsAdmin.style.display = isOfficer ? 'none' : '';
@@ -19760,21 +19755,40 @@ function addStaff(){
   renderPayroll();
 }
 function removeStaff(id){ staff = staff.filter(s=>s.id!==id); syncEntity('delete','staff', id); renderPayroll(); }
+function saveStaffRow(i){
+  const s = window._staffRows[i]; if(!s) return;
+  s.basic = parseFloat(document.getElementById('stfBasic-'+i).value)||0;
+  s.threshold = document.getElementById('stfThreshold-'+i).value;
+  s.allowances = parseFloat(document.getElementById('stfAllow-'+i).value)||0;
+  s.deductions = parseFloat(document.getElementById('stfDeduct-'+i).value)||0;
+  syncEntity('update','staff', s.id, s);
+  const btn = document.getElementById('stfSaveBtn-'+i);
+  if(btn){ const old = btn.textContent; btn.textContent = 'Saved ✓'; setTimeout(()=>{ if(btn) btn.textContent = old; }, 1200); }
+  renderPayroll();
+}
 function renderPayroll(){
   const tb = document.getElementById('payrollTable');
   if(!tb) return;
   const rows = payrollComputed();
-  tb.innerHTML = rows.map(s=>`<tr>
+  window._staffRows = staff; // same order/index as rows — used by saveStaffRow for inline edits
+  tb.innerHTML = rows.map((s,i)=>`<tr>
     <td>${s.id}</td><td>${s.name}</td><td>${s.position}</td><td>${s.dept}</td>
-    <td class="num">GH₵${s.basic.toLocaleString()}</td>
+    <td><input class="cell-input" id="stfBasic-${i}" type="number" value="${s.basic}" style="width:80px;text-align:right;"></td>
+    <td><select class="cell-input" id="stfThreshold-${i}" style="width:auto;">
+      <option value="N" ${s.threshold==='N'?'selected':''}>No</option>
+      <option value="Y" ${s.threshold==='Y'?'selected':''}>Yes</option>
+    </select></td>
     <td class="num">GH₵${s.bonus.toLocaleString()}</td>
-    <td class="num">GH₵${s.allowances.toLocaleString()}</td>
-    <td class="num">GH₵${s.deductions.toLocaleString()}</td>
+    <td><input class="cell-input" id="stfAllow-${i}" type="number" value="${s.allowances}" style="width:80px;text-align:right;"></td>
+    <td><input class="cell-input" id="stfDeduct-${i}" type="number" value="${s.deductions}" style="width:80px;text-align:right;"></td>
     <td class="num">GH₵${s.gross.toLocaleString()}</td>
     <td class="num" style="color:var(--gold);">GH₵${s.net.toLocaleString()}</td>
-    <td style="white-space:nowrap;"><button class="btn-ghost" style="padding:6px 10px;font-size:11.5px;" onclick="generatePayslip('${s.id}')">Payslip</button>
-    <button class="row-del" onclick="removeStaff('${s.id}')">✕</button></td>
-  </tr>`).join('') || '<tr><td colspan="11" style="color:var(--muted);">No staff added yet.</td></tr>';
+    <td style="white-space:nowrap;">
+      <button class="btn-ghost" id="stfSaveBtn-${i}" style="padding:6px 10px;font-size:11px;" onclick="saveStaffRow(${i})">Save</button>
+      <button class="btn-ghost" style="padding:6px 10px;font-size:11.5px;" onclick="generatePayslip('${s.id}')">Payslip</button>
+      <button class="row-del" onclick="removeStaff('${s.id}')">✕</button>
+    </td>
+  </tr>`).join('') || '<tr><td colspan="12" style="color:var(--muted);">No staff added yet.</td></tr>';
 }
 function generatePayslip(id){
   const s = payrollComputed().find(x=>x.id===id);
