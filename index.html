@@ -186,6 +186,69 @@
   .log-toolbar .search-wrap input{width:100%;padding-left:32px;}
   .log-toolbar .search-wrap .icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;}
   .log-toolbar .log-count{font-size:12px;color:var(--muted);white-space:nowrap;}
+
+  /* ---------- TOPBAR QUICK WIDGETS (clock in/out + performance) ---------- */
+  .topbar-widgets{display:flex;gap:8px;align-items:center;}
+  .pill-wrap{position:relative;display:flex;}
+  .pill-btn{
+    display:flex;align-items:center;gap:7px;padding:8px 14px;border-radius:999px;
+    border:1px solid var(--line);background:var(--panel-2);color:var(--white);
+    font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s;
+  }
+  .pill-btn:hover{border-color:var(--gold);}
+  .pill-dot{width:8px;height:8px;border-radius:50%;background:var(--muted);flex:none;}
+  .pill-dot.on{background:var(--green);box-shadow:0 0 6px var(--green);}
+  .pill-dot.done{background:var(--gold);}
+  .pill-popover{
+    display:none;position:absolute;top:calc(100% + 8px);right:0;min-width:200px;z-index:40;
+    background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
+    box-shadow:0 12px 30px rgba(0,0,0,.5);
+  }
+  .pill-popover.open{display:block;}
+  .pill-popover .label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;}
+
+  /* ---------- HAMBURGER (mobile sidebar toggle) ---------- */
+  .hamburger-btn{display:none;background:transparent;border:1px solid var(--line);color:var(--white);border-radius:8px;padding:8px 11px;font-size:16px;cursor:pointer;}
+  .sidebar-backdrop{display:none;}
+  .sidebar-close-btn{display:none;}
+
+  /* ---------- MOBILE / RESPONSIVE ---------- */
+  @media (max-width: 900px){
+    #app.show{display:block;}
+    .hamburger-btn{display:inline-block;}
+    .sidebar{
+      position:fixed;top:0;left:-270px;width:230px;height:100vh;z-index:60;
+      transition:left .2s ease;box-shadow:0 0 40px rgba(0,0,0,.7);
+    }
+    .sidebar.open{left:0;}
+    .sidebar-close-btn{
+      display:block;position:absolute;top:20px;right:16px;background:transparent;border:none;
+      color:var(--muted);font-size:20px;cursor:pointer;
+    }
+    .sidebar-backdrop.open{
+      display:block;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:55;
+    }
+    main{padding:18px 14px 40px;overflow-x:hidden;}
+    .topbar{align-items:flex-start;gap:10px;}
+    .topbar h1{font-size:21px;}
+    .topbar-widgets{order:3;width:100%;margin-top:4px;flex-wrap:wrap;}
+    .who{order:2;font-size:11.5px;}
+    .cards{grid-template-columns:repeat(2,1fr)!important;}
+    .form-row{grid-template-columns:1fr 1fr!important;}
+    .two-col{grid-template-columns:1fr!important;}
+    .cvp-input{grid-template-columns:1fr!important;}
+    #healthRatios{grid-template-columns:repeat(2,1fr)!important;}
+    .section{padding:16px;overflow-x:auto;-webkit-overflow-scrolling:touch;}
+    table{min-width:620px;}
+    .log-toolbar select, .log-toolbar .search-wrap{min-width:0;flex:1 1 140px;}
+  }
+  @media (max-width: 520px){
+    .cards{grid-template-columns:1fr!important;}
+    .form-row{grid-template-columns:1fr!important;}
+    .login-card{width:92vw;padding:30px 22px;}
+    .pill-btn{font-size:11.5px;padding:7px 11px;}
+    .topbar h1{font-size:19px;}
+  }
 </style>
 </head>
 <body>
@@ -209,7 +272,8 @@
 
 <!-- ============ APP ============ -->
 <div id="app">
-  <div class="sidebar">
+  <div class="sidebar" id="sidebarEl">
+    <button class="sidebar-close-btn" onclick="toggleSidebar(false)" aria-label="Close menu">✕</button>
     <div class="brand"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAQsAAAC8CAMAAABYM3sZAAAAolBMVEUAAADzuFL///8AAAP5vFSdejpNPBz5wFg8LxXvt1XyuFSAGj8AdWI1NTVXV1dTFSkEcWBzGjoDRDkICAirq6vNzc1zc3OTk5Pi4uLPz8+kpKTq6uq/v7/uulIgICAXFxfY2NhFRUUWDQefn59jY2OKiop0dHSCgoJjSiUsLCy1tbUuLi729vZbW1sNBQnn5+dLS0tpaWkCDgwfGAwXFAw7OzuniwmzAAAEFUlEQVR4nO3bfXebNhQG8Lubbem6OVuHMOJlRkwBYkyWeJu//1fblcCW7eactDulxs3z+yPIQhB4JAQnOEQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAF/QzXQufWrwf93Qw/ufpvPHn5c+wc8gWXz/3XSQBbJAFt9YFhO6vaYsiN79MKXo0qc3I1f2uDXhc+eVJQGfRLr1tY59I33/+y/Occ2Cncfjqg8/i1+/7oFdgM/it+OaIYu74ypkESCLAFkEyCJAFgGyCJBFgCwCZBEgiwBZBMgiQBYBsgiQRYAsAmQRIIsAWQTIIkAWwVvK4uSdwO7NvhOI/nZOqlbOydviv7yvelwAcDn//Dila3rzfEMPt1O6ru8oPdy+n87VfXcN3+MbIIsAWQRu7pzw651XlsW/76Z06fObj2t6ugAAgPkrrbKblqjFv1KIjMo+KvtLH0ZQFdrYl7pGJec13XJYRk+cD6XF6V9/X6aex8J6ESpN5bJYW2uT8vMOeDr3XLQ25+3Ha9LurKLmsQuTnNZDKSoW9CpuxoIyR5V38pnWSVLPJ4s8cz8z33Xlaqz0y7gbC4emajwrG481+7NYfTyuorApj8OJsnTcrByyaGglfbCcTRZ8vy/Znjl3L38SZo53FCslFc+HlvdMnXYFzdynZJqEY2IZF3e5tF9xRJ0fSWktV4ORNvsI9lkM29FOlnp1+pppHnRejSUrfWS5pEd+pl0hWbAqqeBDSxPL9ODOoOpMVZF+SmVL3lHFKiKrJYui8HtMaMVdScv9XLLPoircdqXkRm0+xyw2OfdFc/jY11SPs0LsR/RhgO8kIpcHjWPd+DEi4yL17brjLArfrNbDloddKNdS+Wm35jDgZuQu09xv/A0ltdrSmvPEXeyxcmvzdmxWuDN7ZGk4ZKH9bUayGCaR5+MsertdLrfNOKZOs5DfIMo5jgtvnRs5zW7bJL0caZTlMhP4uTNkUXK9WSxWuQtoyKJ21S4LfymsT7LQRmttXhwXfT1UzjULki5M/TBIfa9R1auzLCyP6DyL3g+Q7XEWh8HknWZh/G4XM7xGNnrnFnIBGHdzLdlS5W6QXXyWBScUCbc8y0L5+cVIFtaV1tKi9lfHZrzTHh5efBYtuwuwmGEWq5TjJDEyYhtWjc1zK4epmkxutelxFvX+fpJJITNSeBrmC4ky7+v2SUkWERu3C1lR9Enb8XA1EJvYuZdf0cq6lJPWFLO8Rh47Y5SbEe9j3UWtPG5sCx3LkbZ+aCfDMdf7UV+qBW3dh8RPE8p1sjXpkiQLWnW6K2u3opGd7c8285R8TLS7EGtjaso+4YH1WrlnLRiskcVB1L7eBgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAODb9x+4SnWlG1jWIQAAAABJRU5ErkJggg==" alt="Sash Afrique Ltd"></div>
     <nav>
       <button class="nav-btn active" data-view="dashboard" onclick="showView(&#39;dashboard&#39;)">Dashboard</button>
@@ -258,12 +322,46 @@
 
   <main>
     <div class="topbar">
-      <div>
-        <h1 id="pageTitle">Dashboard</h1>
-        <div class="sub" id="pageSub">Today · <span id="todayDate">5 July 2026</span></div>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <button class="hamburger-btn" id="hamburgerBtn" onclick="toggleSidebar()" aria-label="Menu">☰</button>
+        <div>
+          <h1 id="pageTitle">Dashboard</h1>
+          <div class="sub" id="pageSub">Today · <span id="todayDate">5 July 2026</span></div>
+        </div>
       </div>
+
+      <!-- Officer: tap to clock in/out directly; tap KPI pill for a quick performance popover -->
+      <div class="topbar-widgets" id="topbarWidgetsOfficer">
+        <button class="pill-btn" id="pillClockOfficer" onclick="officerClockAction()">
+          <span class="pill-dot" id="pillClockDotOfficer"></span>
+          <span id="pillClockTextOfficer">Not clocked in</span>
+        </button>
+        <div class="pill-wrap">
+          <button class="pill-btn" id="pillKpiOfficer" onclick="toggleKpiPopover('Officer', event)">
+            🎯 <span id="pillKpiTextOfficer">0%</span>
+          </button>
+          <div class="pill-popover" id="kpiPopoverOfficer">
+            <div class="label" id="kpiPopoverLabelOfficer">Performance Target</div>
+            <div class="value" id="kpiPopoverValueOfficer" style="font-size:17px;margin:4px 0;">0 / 0</div>
+            <div class="kpi-bar"><div class="kpi-bar-fill" id="kpiPopoverBarOfficer" style="width:0%;"></div></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Admin: read-only glance at Benjamin's status; tap either pill to open Staff Ops -->
+      <div class="topbar-widgets" id="topbarWidgetsAdmin">
+        <button class="pill-btn" id="pillClockAdmin" onclick="showView('staffops')" title="Open Staff Ops">
+          <span class="pill-dot" id="pillClockDotAdmin"></span>
+          <span id="pillClockTextAdmin">Not clocked in</span>
+        </button>
+        <button class="pill-btn" id="pillKpiAdmin" onclick="showView('staffops')" title="Open Staff Ops">
+          🎯 <span id="pillKpiTextAdmin">0%</span>
+        </button>
+      </div>
+
       <div class="who">Sash Afrique Ltd — <b id="whoName">Financial OS</b></div>
     </div>
+    <div class="sidebar-backdrop" id="sidebarBackdrop" onclick="toggleSidebar(false)"></div>
     <div id="syncBanner" style="display:none;background:#3a1414;border:1px solid var(--red);color:#ffb3b3;padding:10px 14px;border-radius:8px;font-size:13px;margin:-14px 0 20px;">⚠ Could not save to the server — your last change may only be stored on this device. Check your connection and try again.</div>
 
     <!-- DASHBOARD -->
@@ -281,43 +379,6 @@
         <div class="card"><div class="label">Outstanding Receivables</div><div class="value" id="kpiReceivables">GH₵1,240</div><div class="delta">3 achievers with balances</div></div>
         <div class="card"><div class="label">Investor Liability</div><div class="value" id="kpiInvestor">GH₵3,300</div><div class="delta" id="kpiInvestorSub">1 active · nearest matures Aug 2026</div></div>
         <div class="card"><div class="label">Reserves (Emergency + Growth)</div><div class="value" id="kpiReserves">GH₵7,104</div><div class="delta">10% + 10% of net profit, YTD</div></div>
-      </div>
-
-      <!-- Officer: self-service clock in/out + own performance, front and center on login -->
-      <div class="section" style="margin-top:16px;" id="dashStaffOpsOfficer">
-        <h2>Clock In / Out <small>Self-service attendance</small></h2>
-        <div class="grid cards">
-          <div class="card card-gold">
-            <div class="label">Today's Status</div>
-            <div class="value" id="dashClockStatus" style="font-size:18px;">Not clocked in</div>
-            <div class="delta" id="dashClockTimes" style="color:var(--muted);">&nbsp;</div>
-          </div>
-          <div class="card">
-            <div class="label" id="dashKpiLabel">Performance Target</div>
-            <div class="value" id="dashKpiValue">0 / 0</div>
-            <div class="kpi-bar"><div class="kpi-bar-fill" id="dashKpiBar" style="width:0%;"></div></div>
-          </div>
-        </div>
-        <button class="clock-big-btn clock-in" id="dashClockBtn" onclick="officerClockAction()" style="max-width:280px;margin-top:14px;">Clock In</button>
-        <div class="pill-note" style="margin-top:14px;">Clock in when you start work, clock out when you're done. Full history and staff cost breakdown are on the Staff Ops page.</div>
-      </div>
-
-      <!-- Admin: read-only snapshot of Benjamin's status + performance, with a shortcut to manage it -->
-      <div class="section" style="margin-top:16px;" id="dashStaffOpsAdmin">
-        <h2>Staff Attendance &amp; Performance <small>Benjamin — Operations Officer</small></h2>
-        <div class="grid cards">
-          <div class="card card-gold">
-            <div class="label">Today's Status</div>
-            <div class="value" id="dashAdminClockStatus" style="font-size:18px;">Not clocked in</div>
-            <div class="delta" id="dashAdminClockTimes" style="color:var(--muted);">&nbsp;</div>
-          </div>
-          <div class="card">
-            <div class="label" id="dashAdminKpiLabel">Performance Target</div>
-            <div class="value" id="dashAdminKpiValue">0 / 0</div>
-            <div class="kpi-bar"><div class="kpi-bar-fill" id="dashAdminKpiBar" style="width:0%;"></div></div>
-          </div>
-        </div>
-        <button class="btn-ghost" style="margin-top:14px;" onclick="showView('staffops')">Manage attendance &amp; set KPI →</button>
       </div>
 
       <div class="section" style="margin-top:16px;">
@@ -19424,10 +19485,17 @@ function applyRoleUI(){
   const staffopsOfficer = document.getElementById('staffops-officer');
   if(staffopsAdmin) staffopsAdmin.style.display = isOfficer ? 'none' : '';
   if(staffopsOfficer) staffopsOfficer.style.display = isOfficer ? '' : 'none';
-  const dashStaffopsAdmin = document.getElementById('dashStaffOpsAdmin');
-  const dashStaffopsOfficer = document.getElementById('dashStaffOpsOfficer');
-  if(dashStaffopsAdmin) dashStaffopsAdmin.style.display = isOfficer ? 'none' : '';
-  if(dashStaffopsOfficer) dashStaffopsOfficer.style.display = isOfficer ? '' : 'none';
+  const widgetsOfficer = document.getElementById('topbarWidgetsOfficer');
+  const widgetsAdmin = document.getElementById('topbarWidgetsAdmin');
+  if(widgetsOfficer) widgetsOfficer.style.display = isOfficer ? '' : 'none';
+  if(widgetsAdmin) widgetsAdmin.style.display = isOfficer ? 'none' : '';
+  // Staff Ops is now only reachable by admin (Benjamin gets his clock-in/performance
+  // via the topbar pills instead), so hide the nav item entirely for the officer role.
+  const navStaffOps = document.getElementById('navStaffOps');
+  if(navStaffOps) navStaffOps.style.display = isOfficer ? 'none' : '';
+  if(isOfficer && document.getElementById('view-staffops')?.classList.contains('active')){
+    showView('dashboard');
+  }
   const whoEl = document.getElementById('whoName');
   if(whoEl){
     const s = staff.find(x=>x.id===currentStaffId);
@@ -19443,6 +19511,7 @@ function showView(v){
   document.querySelectorAll('.view').forEach(el=>el.classList.remove('active'));
   document.getElementById('view-'+v).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.view===v));
+  toggleSidebar(false);
   const titles = {dashboard:'Dashboard', analysis:'Analysis', forecast:'Forecast', revenue:'Revenue', expenses:'Expenses', achievers:'Achievers', suppliers:'Suppliers', budget:'Budget', payroll:'Staff & Payroll', assets:'Assets', investors:'Investors', reserves:'Reserves', balancesheet:'Balance Sheet', pnl:'Profit & Loss', cashflow:'Cashflow', staffops:'Staff Ops'};
   document.getElementById('pageTitle').textContent = titles[v];
   const subs = {dashboard:'Today · '+new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'}), analysis:'Financial health, alerts, and break-even — everything for deciding what to do next', forecast:'Projected sales, expenses, and cash — model a scenario and see where it leads', revenue:'Daily cash receipts', expenses:'Cost recording by category', achievers:'Who buys from you, and how often', suppliers:"Who you pay, and what's outstanding", budget:'Planned vs actual, by category', payroll:'Staff records, basic pay, bonus, and payslips', assets:'Straight-line depreciation register', investors:'Amounts in, returns due, and maturity', reserves:'Automatic 10%+10% profit allocation', balancesheet:'Generated, not hand-maintained', pnl:'Generated from recorded transactions', cashflow:'Inflow vs outflow, and gross margin over time', staffops: currentRole==='officer' ? 'Your attendance, performance, and the team\'s staff cost' : 'Attendance, performance target, and staff cost for Benjamin'};
@@ -19460,6 +19529,28 @@ function showView(v){
   if(v==='cashflow') renderCashflowView();
   if(v==='staffops') renderStaffOps();
 }
+
+/* ---------------- MOBILE SIDEBAR + TOPBAR POPOVER ---------------- */
+function toggleSidebar(force){
+  const sidebar = document.getElementById('sidebarEl');
+  const backdrop = document.getElementById('sidebarBackdrop');
+  if(!sidebar || !backdrop) return;
+  const open = typeof force === 'boolean' ? force : !sidebar.classList.contains('open');
+  sidebar.classList.toggle('open', open);
+  backdrop.classList.toggle('open', open);
+}
+
+function toggleKpiPopover(which, evt){
+  if(evt) evt.stopPropagation();
+  const pop = document.getElementById('kpiPopover'+which);
+  if(!pop) return;
+  const willOpen = !pop.classList.contains('open');
+  document.querySelectorAll('.pill-popover').forEach(p=>p.classList.remove('open'));
+  if(willOpen) pop.classList.add('open');
+}
+document.addEventListener('click', function(){
+  document.querySelectorAll('.pill-popover').forEach(p=>p.classList.remove('open'));
+});
 
 /* ---------------- REVENUE ---------------- */
 function addRevenue(){
@@ -19978,13 +20069,12 @@ function renderStaffOps(){
   const aKpiLabelText = document.getElementById('adminKpiLabelText'); if(aKpiLabelText) aKpiLabelText.textContent = label;
   const aKpiValueText = document.getElementById('adminKpiValueText'); if(aKpiValueText) aKpiValueText.textContent = `${actual} / ${target}`;
   const aKpiBar = document.getElementById('adminKpiBar'); if(aKpiBar) aKpiBar.style.width = pct+'%';
-  // Dashboard widgets (officer's own clock/KPI card, and admin's read-only snapshot of Benjamin's)
-  const dKpiLabel = document.getElementById('dashKpiLabel'); if(dKpiLabel) dKpiLabel.textContent = label;
-  const dKpiValue = document.getElementById('dashKpiValue'); if(dKpiValue) dKpiValue.textContent = `${actual} / ${target}`;
-  const dKpiBar = document.getElementById('dashKpiBar'); if(dKpiBar) dKpiBar.style.width = pct+'%';
-  const dAdminKpiLabel = document.getElementById('dashAdminKpiLabel'); if(dAdminKpiLabel) dAdminKpiLabel.textContent = label;
-  const dAdminKpiValue = document.getElementById('dashAdminKpiValue'); if(dAdminKpiValue) dAdminKpiValue.textContent = `${actual} / ${target}`;
-  const dAdminKpiBar = document.getElementById('dashAdminKpiBar'); if(dAdminKpiBar) dAdminKpiBar.style.width = pct+'%';
+  // Topbar quick widgets — officer's own pill + popover, admin's read-only glance pills
+  const pKpiTextO = document.getElementById('pillKpiTextOfficer'); if(pKpiTextO) pKpiTextO.textContent = Math.round(pct)+'%';
+  const pKpiLabelO = document.getElementById('kpiPopoverLabelOfficer'); if(pKpiLabelO) pKpiLabelO.textContent = label;
+  const pKpiValueO = document.getElementById('kpiPopoverValueOfficer'); if(pKpiValueO) pKpiValueO.textContent = `${actual} / ${target}`;
+  const pKpiBarO = document.getElementById('kpiPopoverBarOfficer'); if(pKpiBarO) pKpiBarO.style.width = pct+'%';
+  const pKpiTextA = document.getElementById('pillKpiTextAdmin'); if(pKpiTextA) pKpiTextA.textContent = Math.round(pct)+'%';
   const kpiLabelInput = document.getElementById('kpiLabelInput'); if(kpiLabelInput && document.activeElement!==kpiLabelInput) kpiLabelInput.value = label;
   const kpiTargetInput = document.getElementById('kpiTargetInput'); if(kpiTargetInput && document.activeElement!==kpiTargetInput) kpiTargetInput.value = target;
   const kpiActualInput = document.getElementById('kpiActualInput'); if(kpiActualInput && document.activeElement!==kpiActualInput) kpiActualInput.value = actual;
@@ -19995,24 +20085,29 @@ function renderStaffOps(){
   const btn = document.getElementById('officerClockBtn');
   const statusEl = document.getElementById('officerClockStatus');
   const timesEl = document.getElementById('officerClockTimes');
-  const dashBtn = document.getElementById('dashClockBtn');
-  const dashStatusEl = document.getElementById('dashClockStatus');
-  const dashTimesEl = document.getElementById('dashClockTimes');
-  const dashAdminStatusEl = document.getElementById('dashAdminClockStatus');
-  const dashAdminTimesEl = document.getElementById('dashAdminClockTimes');
+  const pillTextO = document.getElementById('pillClockTextOfficer');
+  const pillDotO = document.getElementById('pillClockDotOfficer');
+  const pillTextA = document.getElementById('pillClockTextAdmin');
+  const pillDotA = document.getElementById('pillClockDotAdmin');
   if(openRec){
     if(btn && statusEl && timesEl){ statusEl.textContent = 'Clocked in'; timesEl.textContent = 'Since '+openRec.clockIn; btn.textContent = 'Clock Out'; btn.className = 'clock-big-btn clock-out'; btn.disabled = false; }
-    if(dashBtn && dashStatusEl && dashTimesEl){ dashStatusEl.textContent = 'Clocked in'; dashTimesEl.textContent = 'Since '+openRec.clockIn; dashBtn.textContent = 'Clock Out'; dashBtn.className = 'clock-big-btn clock-out'; dashBtn.disabled = false; }
-    if(dashAdminStatusEl && dashAdminTimesEl){ dashAdminStatusEl.textContent = 'Clocked in'; dashAdminTimesEl.textContent = 'Since '+openRec.clockIn; }
+    if(pillTextO){ pillTextO.textContent = 'Clock Out — since '+openRec.clockIn; }
+    if(pillDotO){ pillDotO.className = 'pill-dot on'; }
+    if(pillTextA){ pillTextA.textContent = 'Clocked in — since '+openRec.clockIn; }
+    if(pillDotA){ pillDotA.className = 'pill-dot on'; }
   } else if(doneToday){
     const summary = doneToday.clockIn+' – '+doneToday.clockOut+' ('+doneToday.hours+' hrs)';
     if(btn && statusEl && timesEl){ statusEl.textContent = 'Done for today'; timesEl.textContent = summary; btn.textContent = 'Clocked Out'; btn.className = 'clock-big-btn clock-done'; btn.disabled = true; }
-    if(dashBtn && dashStatusEl && dashTimesEl){ dashStatusEl.textContent = 'Done for today'; dashTimesEl.textContent = summary; dashBtn.textContent = 'Clocked Out'; dashBtn.className = 'clock-big-btn clock-done'; dashBtn.disabled = true; }
-    if(dashAdminStatusEl && dashAdminTimesEl){ dashAdminStatusEl.textContent = 'Done for today'; dashAdminTimesEl.textContent = summary; }
+    if(pillTextO){ pillTextO.textContent = 'Done for today'; }
+    if(pillDotO){ pillDotO.className = 'pill-dot done'; }
+    if(pillTextA){ pillTextA.textContent = 'Done for today ('+doneToday.hours+' hrs)'; }
+    if(pillDotA){ pillDotA.className = 'pill-dot done'; }
   } else {
     if(btn && statusEl && timesEl){ statusEl.textContent = 'Not clocked in'; timesEl.textContent = '\u00A0'; btn.textContent = 'Clock In'; btn.className = 'clock-big-btn clock-in'; btn.disabled = false; }
-    if(dashBtn && dashStatusEl && dashTimesEl){ dashStatusEl.textContent = 'Not clocked in'; dashTimesEl.textContent = '\u00A0'; dashBtn.textContent = 'Clock In'; dashBtn.className = 'clock-big-btn clock-in'; dashBtn.disabled = false; }
-    if(dashAdminStatusEl && dashAdminTimesEl){ dashAdminStatusEl.textContent = 'Not clocked in'; dashAdminTimesEl.textContent = '\u00A0'; }
+    if(pillTextO){ pillTextO.textContent = 'Clock In'; }
+    if(pillDotO){ pillDotO.className = 'pill-dot'; }
+    if(pillTextA){ pillTextA.textContent = 'Not clocked in'; }
+    if(pillDotA){ pillDotA.className = 'pill-dot'; }
   }
 
   renderStaffCostChart(isOfficer ? 'staffCostChartOfficer' : 'staffCostChartAdmin');
