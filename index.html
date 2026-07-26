@@ -187,6 +187,19 @@
   .log-toolbar .search-wrap .icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;}
   .log-toolbar .log-count{font-size:12px;color:var(--muted);white-space:nowrap;}
 
+  /* ---------- PROFIT / LOSS STATUS BADGE ---------- */
+  .profit-status-pill{
+    display:inline-flex;align-items:center;gap:9px;padding:9px 16px;border-radius:999px;
+    font-size:13px;font-weight:700;margin-bottom:16px;border:1px solid var(--line);background:var(--panel-2);
+  }
+  .profit-status-pill .pill-dot{width:9px;height:9px;}
+  .profit-status-pill.is-profit{background:#0f2b17;border-color:rgba(63,174,92,.5);color:var(--green);}
+  .profit-status-pill.is-profit .pill-dot{background:var(--green);box-shadow:0 0 6px var(--green);}
+  .profit-status-pill.is-loss{background:#2b0f0f;border-color:rgba(217,83,79,.5);color:var(--red);}
+  .profit-status-pill.is-loss .pill-dot{background:var(--red);box-shadow:0 0 6px var(--red);}
+  .profit-status-pill.is-even{background:#2b230f;border-color:rgba(250,178,2,.5);color:var(--gold);}
+  .profit-status-pill.is-even .pill-dot{background:var(--gold);box-shadow:0 0 6px var(--gold);}
+
   /* ---------- TOPBAR QUICK WIDGETS (clock in/out + performance) ---------- */
   .topbar-widgets{display:flex;gap:8px;align-items:center;}
   .pill-wrap{position:relative;display:flex;}
@@ -366,6 +379,10 @@
 
     <!-- DASHBOARD -->
     <div class="view active" id="view-dashboard">
+      <div class="profit-status-pill" id="profitStatusPill">
+        <span class="pill-dot" id="profitStatusDot"></span>
+        <span id="profitStatusText">Calculating…</span>
+      </div>
       <div class="grid cards">
         <div class="card card-gold"><div class="label">Cash Balance (Bank + MoMo)</div><div class="value" id="kpiCash">GH₵31,455</div><div class="delta up">Closing balance, all accounts</div></div>
         <div class="card"><div class="label">Sales — Jul 2026 (mtd)</div><div class="value" id="kpiSales">GH₵480</div><div class="delta" id="kpiSalesDelta"><span class="down">▼ 96% vs June</span></div></div>
@@ -20191,6 +20208,29 @@ function renderDashboard(){
   document.getElementById('kpiExpenses').textContent = 'GH₵'+jul.exp.toLocaleString(undefined,{maximumFractionDigits:0});
   document.getElementById('kpiSurplus').textContent = 'GH₵'+jul.surplus.toLocaleString(undefined,{maximumFractionDigits:0});
   document.getElementById('kpiSurplus').style.color = jul.surplus>=0 ? 'var(--white)' : 'var(--red)';
+
+  // Profit/Loss status badge: Surplus minus modeled Fixed Costs (Analysis > Fixed Costs) —
+  // catches costs like depreciation that sit in the break-even model but may not show up
+  // as an actual recorded expense, so this is the truer bottom line.
+  const totalFixedCosts = fixedCosts.reduce((s,f)=>s+(Number(f.amount)||0),0);
+  const netProfit = jul.surplus - totalFixedCosts;
+  const profitPill = document.getElementById('profitStatusPill');
+  const profitDot = document.getElementById('profitStatusDot');
+  const profitText = document.getElementById('profitStatusText');
+  if(profitPill && profitText){
+    const amt = 'GH₵'+Math.abs(netProfit).toLocaleString(undefined,{maximumFractionDigits:0});
+    profitPill.classList.remove('is-profit','is-loss','is-even');
+    if(Math.abs(netProfit) < 1){
+      profitPill.classList.add('is-even');
+      profitText.textContent = `Break-even — ${amt} after fixed costs`;
+    } else if(netProfit > 0){
+      profitPill.classList.add('is-profit');
+      profitText.textContent = `Profitable — ${amt} after fixed costs`;
+    } else {
+      profitPill.classList.add('is-loss');
+      profitText.textContent = `Loss — ${amt} after fixed costs`;
+    }
+  }
 
   const profitTarget = MONTHLY_PROFIT_TARGET_2026[CURRENT_MONTH_PREFIX.slice(5,7)];
   const targetProgress = profitTarget>0 ? Math.max(0, Math.min(100, (jul.surplus/profitTarget*100))) : 0;
