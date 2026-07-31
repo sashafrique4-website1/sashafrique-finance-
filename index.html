@@ -20209,11 +20209,10 @@ function renderDashboard(){
   document.getElementById('kpiSurplus').textContent = 'GH₵'+jul.surplus.toLocaleString(undefined,{maximumFractionDigits:0});
   document.getElementById('kpiSurplus').style.color = jul.surplus>=0 ? 'var(--white)' : 'var(--red)';
 
-  // Profit/Loss status badge: Surplus minus modeled Fixed Costs (Analysis > Fixed Costs) —
-  // catches costs like depreciation that sit in the break-even model but may not show up
-  // as an actual recorded expense, so this is the truer bottom line.
-  const totalFixedCosts = fixedCosts.reduce((s,f)=>s+(Number(f.amount)||0),0);
-  const netProfit = jul.surplus - totalFixedCosts;
+  // Profit/Loss status badge: reflects Surplus (Sales − Expenses) directly. Fixed costs
+  // (salaries, phone depreciation, etc.) are already recorded as real transactions inside
+  // Expenses, so Surplus already nets them out — this pill must NOT subtract them again.
+  const netProfit = jul.surplus;
   const profitPill = document.getElementById('profitStatusPill');
   const profitDot = document.getElementById('profitStatusDot');
   const profitText = document.getElementById('profitStatusText');
@@ -20222,13 +20221,13 @@ function renderDashboard(){
     profitPill.classList.remove('is-profit','is-loss','is-even');
     if(Math.abs(netProfit) < 1){
       profitPill.classList.add('is-even');
-      profitText.textContent = `Break-even — ${amt} after fixed costs`;
+      profitText.textContent = `Break-even — ${amt} this month`;
     } else if(netProfit > 0){
       profitPill.classList.add('is-profit');
-      profitText.textContent = `Profitable — ${amt} after fixed costs`;
+      profitText.textContent = `Profitable — ${amt} this month`;
     } else {
       profitPill.classList.add('is-loss');
-      profitText.textContent = `Loss — ${amt} after fixed costs`;
+      profitText.textContent = `Loss — ${amt} this month`;
     }
   }
 
