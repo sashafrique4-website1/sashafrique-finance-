@@ -385,13 +385,13 @@
       </div>
       <div class="grid cards">
         <div class="card card-gold"><div class="label">Cash Balance (Bank + MoMo)</div><div class="value" id="kpiCash">GH₵31,455</div><div class="delta up">Closing balance, all accounts</div></div>
-        <div class="card"><div class="label">Sales — Jul 2026 (mtd)</div><div class="value" id="kpiSales">GH₵480</div><div class="delta" id="kpiSalesDelta"><span class="down">▼ 96% vs June</span></div></div>
-        <div class="card"><div class="label">Surplus — Jul 2026 (mtd)</div><div class="value" id="kpiSurplus" style="color: var(--red);">GH₵-674</div><div class="delta" id="kpiSurplusDelta"><span class="up">▲ 68% vs June</span></div></div>
-        <div class="card"><div class="label">Expenses — Jul 2026 (mtd)</div><div class="value" id="kpiExpenses">GH₵1,154</div><div class="delta" id="kpiExpDelta"><span class="muted">vs GH₵14,452 in June</span></div></div>
+        <div class="card"><div class="label" id="kpiSalesLabel">Sales — Jul 2026 (mtd)</div><div class="value" id="kpiSales">GH₵480</div><div class="delta" id="kpiSalesDelta"><span class="down">▼ 96% vs June</span></div></div>
+        <div class="card"><div class="label" id="kpiSurplusLabel">Surplus — Jul 2026 (mtd)</div><div class="value" id="kpiSurplus" style="color: var(--red);">GH₵-674</div><div class="delta" id="kpiSurplusDelta"><span class="up">▲ 68% vs June</span></div></div>
+        <div class="card"><div class="label" id="kpiExpensesLabel">Expenses — Jul 2026 (mtd)</div><div class="value" id="kpiExpenses">GH₵1,154</div><div class="delta" id="kpiExpDelta"><span class="muted">vs GH₵14,452 in June</span></div></div>
       </div>
 
       <div class="grid cards" style="margin-top:16px;">
-        <div class="card"><div class="label">Monthly Profit Target — Jul</div><div class="value" id="kpiTarget">GH₵-674 / GH₵8,000</div><div class="delta" id="kpiTargetBar"><div style="background:#222;border-radius:20px;height:6px;margin-top:6px;overflow:hidden;"><div style="width:0%;background:var(--gold);height:100%;"></div></div><span class="muted" style="font-size:11px;">0% of target</span></div></div>
+        <div class="card"><div class="label" id="kpiTargetLabel">Monthly Profit Target — Jul</div><div class="value" id="kpiTarget">GH₵-674 / GH₵8,000</div><div class="delta" id="kpiTargetBar"><div style="background:#222;border-radius:20px;height:6px;margin-top:6px;overflow:hidden;"><div style="width:0%;background:var(--gold);height:100%;"></div></div><span class="muted" style="font-size:11px;">0% of target</span></div></div>
         <div class="card"><div class="label">Break-even Progress</div><div class="value" id="kpiBE">3% of BEP</div><div class="delta" id="kpiBEBar"><div style="background:#222;border-radius:20px;height:6px;margin-top:6px;overflow:hidden;"><div style="width:2.723910836737553%;background:var(--gold);height:100%;"></div></div></div></div>
         <div class="card"><div class="label">Outstanding Receivables</div><div class="value" id="kpiReceivables">GH₵1,240</div><div class="delta">3 achievers with balances</div></div>
         <div class="card"><div class="label">Investor Liability</div><div class="value" id="kpiInvestor">GH₵3,300</div><div class="delta" id="kpiInvestorSub">1 active · nearest matures Aug 2026</div></div>
@@ -399,7 +399,7 @@
       </div>
 
       <div class="section" style="margin-top:16px;">
-        <h2>Monthly Trend <small>Sales vs Surplus, Jan–Jul 2026</small></h2>
+        <h2>Monthly Trend <small id="trendMonthLabel">Sales vs Surplus, Jan–Jul 2026</small></h2>
         <canvas id="trendChart" height="264" style="box-sizing: border-box; display: block; height: 264px; width: 991px;" width="991"></canvas>
       </div>
 
@@ -17236,7 +17236,7 @@
         <button class="btn-small" onclick="addBudgetLine()">Add budget line</button>
       </div>
       <div class="section">
-        <h2>Budget vs Actual <small>Jul 2026 — actuals pulled live from your Expense Log</small></h2>
+        <h2>Budget vs Actual <small id="budgetMonthLabel">Jul 2026 — actuals pulled live from your Expense Log</small></h2>
         <table>
           <thead><tr><th>Category</th><th>Department</th><th class="num">Budgeted</th><th class="num">Actual</th><th class="num">Variance</th><th class="num">% Variance</th><th></th></tr></thead>
           <tbody id="budgetTable"><tr>
@@ -17321,7 +17321,7 @@
         <div class="pill-note">Bonus rule: 20% of basic pay if the performance threshold is met, GH₵0 if not. Basic, allowances, deductions, and threshold are editable any time directly in the table below — update them and click Save. SSNIT/PAYE deductions plug into the Deductions field for now — statutory calculation is on the roadmap.</div>
       </div>
       <div class="section">
-        <h2>Payroll <small>Jul 2026</small></h2>
+        <h2>Payroll <small id="payrollMonthLabel">Jul 2026</small></h2>
         <table>
           <thead><tr><th>Staff ID</th><th>Name</th><th>Role</th><th>Dept</th><th class="num">Basic</th><th>Threshold Met?</th><th class="num">Bonus</th><th class="num">Allowances</th><th class="num">Deductions</th><th class="num">Gross</th><th class="num">Net</th><th></th></tr></thead>
           <tbody id="payrollTable"><tr>
@@ -17571,7 +17571,7 @@
     <!-- BALANCE SHEET -->
     <div class="view" id="view-balancesheet">
       <div class="section">
-        <h2>Statement of Financial Position <small>Jul 2026 — generated live from Revenue, Expenses, Assets, Investors, and Reserves</small></h2>
+        <h2>Statement of Financial Position <small id="bsMonthLabel">Jul 2026 — generated live from Revenue, Expenses, Assets, Investors, and Reserves</small></h2>
         <div class="two-col">
           <div>
             <h3 style="font-size:14px;color:var(--gold);margin-top:0;">Assets</h3>
@@ -17772,6 +17772,10 @@ function applyBackendData(data){
   if(data.products && data.products.length) products = data.products;
   if(data.fixedCosts && data.fixedCosts.length) fixedCosts = data.fixedCosts;
   if(data.attendance && data.attendance.length) attendanceLog = data.attendance;
+  // Recompute the historical months trend from whatever data just arrived — otherwise the
+  // dashboard would keep showing the Jan–June (or Jan–Jul, etc.) snapshot taken at page load,
+  // even after live backend data replaces the local seed arrays above.
+  monthly2026 = buildMonthlyHistory();
 }
 
 async function initBackendSync(){
@@ -17808,15 +17812,14 @@ async function initBackendSync(){
   }
 }
 
-/* ---------------- SEED DATA (from the real 2026 workbook) ---------------- */
-const monthly2026 = [
-  {m:'January',  sales:12516,    exp:6017.29,  surplus:6498.71,  orders:90,  cogs:2973+1423},
-  {m:'February', sales:11754,    exp:7716.66,  surplus:4037.34,  orders:78,  cogs:3340+1707},
-  {m:'March',    sales:30071.5,  exp:18943.12, surplus:11128.38, orders:219, cogs:8836+5471},
-  {m:'April',    sales:22763.43, exp:12758.49, surplus:10004.94, orders:188, cogs:6595+3826},
-  {m:'May',      sales:26581.17, exp:22729.02, surplus:3852.15,  orders:0,   cogs:10084+8711},
-  {m:'June',     sales:12342.11, exp:14451.92, surplus:-2109.81, orders:0,   cogs:3292+2358},
-];
+/* ---------------- SEED DATA (from the real 2026 workbook) ----------------
+   monthly2026 used to be a hand-typed array stopping at June — meaning every
+   month after that (July, August, ...) never rolled into "history" and the
+   dashboard stayed frozen on whatever month was hardcoded as "current" at
+   build time. It's now computed live from the ledger — see buildMonthlyHistory()
+   near CURRENT_MONTH_PREFIX below — so it always covers Jan 2026 through the
+   month before whatever "today" actually is, with zero manual upkeep. */
+let monthly2026 = [];
 let cashBalance = 32128.92; // recomputed live in renderDashboard() from the full ledger — see OPENING_CASH_BALANCE below
 // The Cash Balance (Bank+MoMo) card used to be a hardcoded June closing figure plus only the
 // CURRENT MONTH's entries. That meant any entry dated outside the current month — including
@@ -20177,10 +20180,51 @@ function renderAssets(){
 
 /* ---------------- DASHBOARD ---------------- */
 let lastHealthScore = 70;
-const CURRENT_MONTH_PREFIX = '2026-07';
+
+function monthPrefix(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'); }
+
+// CURRENT_MONTH_PREFIX used to be hand-set to '2026-07' and never updated — meaning the whole
+// dashboard stayed pinned to July forever, regardless of the actual date. It's now derived from
+// the real clock, so the "current month" rolls forward automatically every month with no manual edit.
+const TODAY = new Date();
+const CURRENT_MONTH_PREFIX = monthPrefix(TODAY);
+const CURRENT_MONTH_LABEL_FULL = TODAY.toLocaleString('en-US',{month:'long', year:'numeric'});
+const CURRENT_MONTH_LABEL_SHORT = TODAY.toLocaleString('en-US',{month:'short'});
+const PREVIOUS_MONTH_DATE = new Date(TODAY.getFullYear(), TODAY.getMonth()-1, 1);
+const PREVIOUS_MONTH_PREFIX = monthPrefix(PREVIOUS_MONTH_DATE);
+const PREVIOUS_MONTH_LABEL = PREVIOUS_MONTH_DATE.toLocaleString('en-US',{month:'long'});
+
+function monthlyLedgerAggFull(prefix){
+  const rev = revenueEntries.filter(r=>r.date.startsWith(prefix));
+  const exp = expenseEntries.filter(e=>e.date.startsWith(prefix));
+  const sales = rev.reduce((s,r)=>s+r.amount,0);
+  const total = exp.reduce((s,e)=>s+e.amount,0);
+  const cogs = exp.filter(e=>e.category==='Weaving of sash'||e.category==='Embroidery').reduce((s,e)=>s+e.amount,0);
+  return {sales, exp:total, surplus:sales-total, orders:rev.length, cogs};
+}
+
+// Builds the "completed months" history live from the ledger, from January 2026 up to (but not
+// including) the current month — replaces the old hardcoded Jan–June array. Runs once at load,
+// after revenueEntries/expenseEntries exist.
+function buildMonthlyHistory(){
+  const months = [];
+  let d = new Date(2026, 0, 1);
+  let guard = 0; // safety cap so a clock/date bug can never loop forever
+  while(monthPrefix(d) !== CURRENT_MONTH_PREFIX && guard < 60){
+    const agg = monthlyLedgerAggFull(monthPrefix(d));
+    months.push({ m: d.toLocaleString('en-US',{month:'long'}), sales:agg.sales, exp:agg.exp, surplus:agg.surplus, orders:agg.orders, cogs:agg.cogs });
+    d.setMonth(d.getMonth()+1);
+    guard++;
+  }
+  return months;
+}
+monthly2026 = buildMonthlyHistory();
+
 function julyTotals(){
-  // Only count entries dated in the current operating month (July 2026) for dashboard/KPI math,
-  // so backdated or historical entries (e.g. imported from earlier months) don't distort "this month" figures.
+  // Name kept for backward compatibility with the rest of the file — this actually computes
+  // whatever CURRENT_MONTH_PREFIX resolves to right now (i.e. the real current month, not July).
+  // Only count entries dated in the current operating month for dashboard/KPI math, so backdated
+  // or historical entries (e.g. imported from earlier months) don't distort "this month" figures.
   const rev = revenueEntries.filter(r=>r.date.startsWith(CURRENT_MONTH_PREFIX));
   const exps = expenseEntries.filter(e=>e.date.startsWith(CURRENT_MONTH_PREFIX));
   const sales = rev.reduce((s,r)=>s+r.amount,0);
@@ -20236,12 +20280,20 @@ function renderDashboard(){
   document.getElementById('kpiTarget').textContent = 'GH₵'+jul.surplus.toLocaleString(undefined,{maximumFractionDigits:0})+' / GH₵'+profitTarget.toLocaleString();
   document.getElementById('kpiTargetBar').innerHTML = `<div style="background:#222;border-radius:20px;height:6px;margin-top:6px;overflow:hidden;"><div style="width:${targetProgress}%;background:${jul.surplus>=profitTarget?'var(--green)':'var(--gold)'};height:100%;"></div></div><span class="muted" style="font-size:11px;">${targetProgress.toFixed(0)}% of target</span>`;
 
-  const juneSurplus = monthly2026[5].surplus;
+  const juneSurplus = monthly2026[monthly2026.length-1].surplus;
   const surplusDelta = juneSurplus!==0 ? ((jul.surplus-juneSurplus)/Math.abs(juneSurplus)*100) : 0;
-  document.getElementById('kpiSurplusDelta').innerHTML = `<span class="${surplusDelta>=0?'up':'down'}">${surplusDelta>=0?'▲':'▼'} ${Math.abs(surplusDelta).toFixed(0)}% vs June</span>`;
-  const salesDelta = ((jul.sales-monthly2026[5].sales)/monthly2026[5].sales*100) || 0;
-  document.getElementById('kpiSalesDelta').innerHTML = `<span class="${salesDelta>=0?'up':'down'}">${salesDelta>=0?'▲':'▼'} ${Math.abs(salesDelta).toFixed(0)}% vs June</span>`;
-  document.getElementById('kpiExpDelta').innerHTML = `<span class="muted">vs GH₵${monthly2026[5].exp.toLocaleString(undefined,{maximumFractionDigits:0})} in June</span>`;
+  document.getElementById('kpiSurplusDelta').innerHTML = `<span class="${surplusDelta>=0?'up':'down'}">${surplusDelta>=0?'▲':'▼'} ${Math.abs(surplusDelta).toFixed(0)}% vs ${PREVIOUS_MONTH_LABEL}</span>`;
+  const salesDelta = ((jul.sales-monthly2026[monthly2026.length-1].sales)/monthly2026[monthly2026.length-1].sales*100) || 0;
+  document.getElementById('kpiSalesDelta').innerHTML = `<span class="${salesDelta>=0?'up':'down'}">${salesDelta>=0?'▲':'▼'} ${Math.abs(salesDelta).toFixed(0)}% vs ${PREVIOUS_MONTH_LABEL}</span>`;
+  document.getElementById('kpiExpDelta').innerHTML = `<span class="muted">vs GH₵${monthly2026[monthly2026.length-1].exp.toLocaleString(undefined,{maximumFractionDigits:0})} in ${PREVIOUS_MONTH_LABEL}</span>`;
+  const salesLabelEl = document.getElementById('kpiSalesLabel'); if(salesLabelEl) salesLabelEl.textContent = `Sales — ${CURRENT_MONTH_LABEL_SHORT} ${TODAY.getFullYear()} (mtd)`;
+  const surplusLabelEl = document.getElementById('kpiSurplusLabel'); if(surplusLabelEl) surplusLabelEl.textContent = `Surplus — ${CURRENT_MONTH_LABEL_SHORT} ${TODAY.getFullYear()} (mtd)`;
+  const expensesLabelEl = document.getElementById('kpiExpensesLabel'); if(expensesLabelEl) expensesLabelEl.textContent = `Expenses — ${CURRENT_MONTH_LABEL_SHORT} ${TODAY.getFullYear()} (mtd)`;
+  const targetLabelEl = document.getElementById('kpiTargetLabel'); if(targetLabelEl) targetLabelEl.textContent = `Monthly Profit Target — ${CURRENT_MONTH_LABEL_SHORT}`;
+  const trendLabelEl = document.getElementById('trendMonthLabel'); if(trendLabelEl) trendLabelEl.textContent = `Sales vs Surplus, Jan–${CURRENT_MONTH_LABEL_SHORT} ${TODAY.getFullYear()}`;
+  const budgetLabelEl = document.getElementById('budgetMonthLabel'); if(budgetLabelEl) budgetLabelEl.textContent = `${CURRENT_MONTH_LABEL_FULL} — actuals pulled live from your Expense Log`;
+  const payrollLabelEl = document.getElementById('payrollMonthLabel'); if(payrollLabelEl) payrollLabelEl.textContent = CURRENT_MONTH_LABEL_FULL;
+  const bsLabelEl = document.getElementById('bsMonthLabel'); if(bsLabelEl) bsLabelEl.textContent = `${CURRENT_MONTH_LABEL_FULL} — generated live from Revenue, Expenses, Assets, Investors, and Reserves`;
 
   // break-even progress (blended BEP revenue at current defaults)
   const be = computeBE();
@@ -20272,9 +20324,9 @@ function nearestMaturity(list){
 
 function renderAlerts(jul, be, progress, receivables){
   const alerts = [];
-  const salesDelta = ((jul.sales-monthly2026[5].sales)/monthly2026[5].sales*100) || 0;
-  if(salesDelta < -10) alerts.push({type:'bad', text:`Revenue is down ${Math.abs(salesDelta).toFixed(0)}% versus June.`});
-  else if(salesDelta > 10) alerts.push({type:'good', text:`Revenue is up ${salesDelta.toFixed(0)}% versus June.`});
+  const salesDelta = ((jul.sales-monthly2026[monthly2026.length-1].sales)/monthly2026[monthly2026.length-1].sales*100) || 0;
+  if(salesDelta < -10) alerts.push({type:'bad', text:`Revenue is down ${Math.abs(salesDelta).toFixed(0)}% versus ${PREVIOUS_MONTH_LABEL}.`});
+  else if(salesDelta > 10) alerts.push({type:'good', text:`Revenue is up ${salesDelta.toFixed(0)}% versus ${PREVIOUS_MONTH_LABEL}.`});
   if(progress < 100 && jul.sales>0) alerts.push({type:'warn', text:`Break-even threshold has not been reached (${progress.toFixed(0)}% of the way there).`});
   if(jul.surplus < 0) alerts.push({type:'bad', text:'This month is currently running at a deficit.'});
   investors.filter(i=>i.status!=='repaid').forEach(i=>{
@@ -20300,8 +20352,8 @@ function computeRatios(jul){
   const currentRatio = currentLiabilities>0 ? currentAssets/currentLiabilities : null;
   const avgMonthlyExp = (monthly2026.reduce((s,m)=>s+m.exp,0)+jul.exp)/(monthly2026.length+1);
   const cashRunway = avgMonthlyExp>0 ? cashBalance/avgMonthlyExp : null;
-  const revenueGrowth = monthly2026[5].sales>0 ? (jul.sales-monthly2026[5].sales)/monthly2026[5].sales*100 : null;
-  const profitGrowth = monthly2026[5].surplus!==0 ? (jul.surplus-monthly2026[5].surplus)/Math.abs(monthly2026[5].surplus)*100 : null;
+  const revenueGrowth = monthly2026[monthly2026.length-1].sales>0 ? (jul.sales-monthly2026[monthly2026.length-1].sales)/monthly2026[monthly2026.length-1].sales*100 : null;
+  const profitGrowth = monthly2026[monthly2026.length-1].surplus!==0 ? (jul.surplus-monthly2026[monthly2026.length-1].surplus)/Math.abs(monthly2026[monthly2026.length-1].surplus)*100 : null;
   const efficiencyRatio = jul.exp>0 ? jul.sales/jul.exp : null;
   return {grossMargin, netMargin, opExRatio, currentRatio, cashRunway, revenueGrowth, profitGrowth, efficiencyRatio};
 }
@@ -20324,7 +20376,7 @@ function renderHealth(jul){
   document.getElementById('healthNum').style.color = color;
   document.getElementById('healthBand').textContent = band;
   document.getElementById('healthExplain').textContent =
-    `Average monthly margin across the year so far is ${avgSurplusMargin.toFixed(1)}%, cash on hand covers roughly ${(r.cashRunway||0).toFixed(1)} months of expenses, and current assets cover current liabilities ${r.currentRatio? r.currentRatio.toFixed(1)+'x' : 'fully'}. ${band==='Needs Attention'||band==='Critical' ? 'The main drag is the June dip and thin cash buffer — rebuilding margin in weaving/embroidery cost control would move this fastest.' : 'Margins and cash cover are both holding at a comfortable level.'}`;
+    `Average monthly margin across the year so far is ${avgSurplusMargin.toFixed(1)}%, cash on hand covers roughly ${(r.cashRunway||0).toFixed(1)} months of expenses, and current assets cover current liabilities ${r.currentRatio? r.currentRatio.toFixed(1)+'x' : 'fully'}. ${band==='Needs Attention'||band==='Critical' ? `The main drag is the ${PREVIOUS_MONTH_LABEL} dip and thin cash buffer — rebuilding margin in weaving/embroidery cost control would move this fastest.` : 'Margins and cash cover are both holding at a comfortable level.'}`;
   const fmt = (v,suffix='%') => v===null ? '—' : v.toFixed(1)+suffix;
   const ratioCards = [
     ['Gross Margin', fmt(r.grossMargin)],
@@ -20744,9 +20796,9 @@ function renderForecast(){
   const months = parseInt(document.getElementById('fcMonths').value) || 6;
 
   const juneRow = monthly2026[monthly2026.length-1]; // last complete actual month
-  document.getElementById('fcStartLabel').textContent = 'August 2026 (from June actuals)';
+  document.getElementById('fcStartLabel').textContent = `${CURRENT_MONTH_LABEL_FULL} (from ${PREVIOUS_MONTH_LABEL} actuals)`;
 
-  const seq = monthSequence(2026, 7, months); // 7 = August (0-indexed)
+  const seq = monthSequence(TODAY.getFullYear(), TODAY.getMonth(), months);
   let sales = juneRow.sales, exp = juneRow.exp, cash = cashBalance;
   const rows = seq.map(s=>{
     sales = sales * (1+revGrowth);
@@ -20798,14 +20850,14 @@ function buildBriefingText(){
   const r = computeRatios(jul);
 
   const paras = [];
-  paras.push(`As of ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}, July has recorded GH₵${jul.sales.toLocaleString(undefined,{maximumFractionDigits:0})} in sales against GH₵${jul.exp.toLocaleString(undefined,{maximumFractionDigits:0})} in expenses, a ${jul.surplus>=0?'surplus':'deficit'} of GH₵${Math.abs(jul.surplus).toLocaleString(undefined,{maximumFractionDigits:0})}. That's ${jul.surplus>=profitTarget?'on pace with or ahead of':'behind'} the GH₵${profitTarget.toLocaleString()} profit target set for the month.`);
-  paras.push(`Revenue is currently ${salesDelta>=0?'up':'down'} ${Math.abs(salesDelta).toFixed(0)}% versus June, and the business has covered ${progress.toFixed(0)}% of the revenue needed to break even this month. Outstanding receivables stand at GH₵${receivables.toLocaleString(undefined,{maximumFractionDigits:0})}.`);
+  paras.push(`As of ${new Date().toLocaleDateString('en-GB',{day:'numeric',month:'long',year:'numeric'})}, ${CURRENT_MONTH_LABEL_SHORT} has recorded GH₵${jul.sales.toLocaleString(undefined,{maximumFractionDigits:0})} in sales against GH₵${jul.exp.toLocaleString(undefined,{maximumFractionDigits:0})} in expenses, a ${jul.surplus>=0?'surplus':'deficit'} of GH₵${Math.abs(jul.surplus).toLocaleString(undefined,{maximumFractionDigits:0})}. That's ${jul.surplus>=profitTarget?'on pace with or ahead of':'behind'} the GH₵${profitTarget.toLocaleString()} profit target set for the month.`);
+  paras.push(`Revenue is currently ${salesDelta>=0?'up':'down'} ${Math.abs(salesDelta).toFixed(0)}% versus ${PREVIOUS_MONTH_LABEL}, and the business has covered ${progress.toFixed(0)}% of the revenue needed to break even this month. Outstanding receivables stand at GH₵${receivables.toLocaleString(undefined,{maximumFractionDigits:0})}.`);
   paras.push(`Financial health score is ${lastHealthScore}/100. Gross margin is ${r.grossMargin===null?'not yet available':r.grossMargin.toFixed(1)+'%'} and cash on hand covers roughly ${(r.cashRunway||0).toFixed(1)} months of average expenses.`);
 
   const actions = [];
   if(jul.surplus < 0) actions.push('Investigate the deficit — check whether a large one-off expense or a slow sales week is the driver, and confirm cash is not running critically low.');
   if(progress < 100 && jul.sales>0) actions.push('Push sales toward the break-even threshold before mid-month to keep pace with target.');
-  if(salesDelta < -10) actions.push('Revenue has slowed noticeably versus June — worth a quick look at whether it\'s seasonal or a pipeline issue.');
+  if(salesDelta < -10) actions.push(`Revenue has slowed noticeably versus ${PREVIOUS_MONTH_LABEL} — worth a quick look at whether it's seasonal or a pipeline issue.`);
   budgetActuals().filter(x=>x.actual > x.amount && x.amount>0).forEach(x=>actions.push(`${x.category} is over budget by ${Math.abs(x.variancePct).toFixed(0)}% — check what drove it before next month's budget is set.`));
   investors.filter(i=>i.status!=='repaid').forEach(i=>{
     const days = Math.round((maturityDate(i)-new Date())/86400000);
@@ -20873,8 +20925,8 @@ function renderPNL(){
     return {m:name+' 2025', prefix, ...agg};
   }).filter(r=>r.sales>0 || r.exp>0);
   const rows2026 = monthly2026.map((r,i)=>({m:r.m+' 2026', prefix:'2026-'+String(i+1).padStart(2,'0'), sales:r.sales, exp:r.exp, surplus:r.surplus, orders:r.orders}));
-  const rowJuly = {m:'July 2026 (mtd)', prefix:'2026-07', sales:jul.sales, exp:jul.exp, surplus:jul.surplus, orders:jul.orders};
-  const rows = rows2025.concat(rows2026, [rowJuly]);
+  const rowCurrent = {m:`${CURRENT_MONTH_LABEL_SHORT} ${TODAY.getFullYear()} (mtd)`, prefix:CURRENT_MONTH_PREFIX, sales:jul.sales, exp:jul.exp, surplus:jul.surplus, orders:jul.orders};
+  const rows = rows2025.concat(rows2026, [rowCurrent]);
   document.getElementById('pnlTable').innerHTML = rows.map(r=>`<tr>
     <td>${r.m}</td>
     <td class="num">GH₵${r.sales.toLocaleString(undefined,{maximumFractionDigits:2})}</td>
