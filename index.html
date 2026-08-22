@@ -262,6 +262,91 @@
     .pill-btn{font-size:11.5px;padding:7px 11px;}
     .topbar h1{font-size:19px;}
   }
+
+  /* ---------- FIXED COST VERDICT: trigger + modal ---------- */
+  .fc-verdict-trigger{
+    display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border-radius:999px;
+    border:1px solid rgba(250,178,2,.4);background:linear-gradient(135deg, rgba(250,178,2,0.12), rgba(250,178,2,0.02));
+    color:var(--gold);font-size:12.5px;font-weight:700;cursor:pointer;margin:0 0 16px 10px;
+    font-family:inherit;transition:.15s;
+  }
+  .fc-verdict-trigger:hover{border-color:var(--gold);background:rgba(250,178,2,0.18);}
+  .fc-verdict-trigger-icon{font-size:14px;}
+  .fc-verdict-trigger-arrow{opacity:.6;transition:.15s;display:inline-block;}
+  .fc-verdict-trigger:hover .fc-verdict-trigger-arrow{transform:translateX(3px);opacity:1;}
+
+  .fcv-backdrop{
+    display:none;position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.72);
+    backdrop-filter:blur(3px);align-items:center;justify-content:center;padding:20px;
+  }
+  .fcv-backdrop.open{display:flex;}
+  .fcv-card{
+    position:relative;width:440px;max-width:100%;max-height:88vh;overflow-y:auto;
+    background:linear-gradient(180deg, #151515, #0d0d0d);border:1px solid var(--line);
+    border-radius:18px;padding:34px 30px 28px;box-shadow:0 40px 100px rgba(0,0,0,.65);
+    animation:fcvPop .28s cubic-bezier(.2,.9,.25,1.2);
+  }
+  @keyframes fcvPop{ from{opacity:0;transform:translateY(14px) scale(.97);} to{opacity:1;transform:translateY(0) scale(1);} }
+  /* diagonal "sash" ribbon across the top-left corner — echoes the woven sash's diagonal cut */
+  .fcv-sash{
+    position:absolute;top:18px;left:-46px;width:170px;height:26px;
+    background:linear-gradient(90deg, var(--gold), #ffe08a, var(--gold));
+    transform:rotate(-45deg);box-shadow:0 4px 14px rgba(250,178,2,.35);
+  }
+  .fcv-close{
+    position:absolute;top:16px;right:16px;background:transparent;border:none;color:var(--muted);
+    font-size:16px;cursor:pointer;padding:6px;line-height:1;
+  }
+  .fcv-close:hover{color:var(--white);}
+  .fcv-eyebrow{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:6px 0 4px;text-align:center;}
+  .fcv-heading{font-size:21px;margin:0 0 22px;text-align:center;color:var(--white);}
+
+  .fcv-badge{
+    text-align:center;padding:22px 10px;border-radius:14px;margin-bottom:22px;
+    border:1px solid var(--line);background:var(--panel-2);transition:background .3s,border-color .3s;
+  }
+  .fcv-badge-word{
+    font-family:'Playfair Display',serif;font-weight:800;font-size:26px;letter-spacing:.02em;
+    margin-bottom:6px;transition:color .3s;
+  }
+  .fcv-badge-amount{
+    font-family:'IBM Plex Mono',monospace;font-size:22px;font-weight:600;font-variant-numeric:tabular-nums;
+    transition:color .3s;
+  }
+  .fcv-badge.is-profit{border-color:rgba(63,174,92,.5);background:radial-gradient(circle at 50% 0%, rgba(63,174,92,.16), rgba(63,174,92,.02));}
+  .fcv-badge.is-profit .fcv-badge-word,.fcv-badge.is-profit .fcv-badge-amount{color:var(--green);}
+  .fcv-badge.is-loss{border-color:rgba(217,83,79,.5);background:radial-gradient(circle at 50% 0%, rgba(217,83,79,.16), rgba(217,83,79,.02));}
+  .fcv-badge.is-loss .fcv-badge-word,.fcv-badge.is-loss .fcv-badge-amount{color:var(--red);}
+  .fcv-badge.is-even{border-color:rgba(250,178,2,.5);background:radial-gradient(circle at 50% 0%, rgba(250,178,2,.16), rgba(250,178,2,.02));}
+  .fcv-badge.is-even .fcv-badge-word,.fcv-badge.is-even .fcv-badge-amount{color:var(--gold);}
+
+  .fcv-track{position:relative;height:10px;border-radius:20px;overflow:hidden;display:flex;margin-bottom:6px;}
+  .fcv-track-zone{flex:1;height:100%;}
+  .fcv-zone-loss{background:linear-gradient(90deg,#5a1f1d,var(--red));}
+  .fcv-zone-even{background:linear-gradient(90deg,var(--gold-dim),var(--gold));}
+  .fcv-zone-profit{background:linear-gradient(90deg,var(--green),#1f5c33);}
+  .fcv-marker{
+    position:absolute;top:-4px;width:18px;height:18px;border-radius:50%;
+    background:var(--white);border:3px solid #0A0A0A;box-shadow:0 0 0 2px rgba(255,255,255,.5);
+    transform:translateX(-50%);transition:left .5s cubic-bezier(.2,.9,.25,1.1);left:50%;
+  }
+  .fcv-track-labels{display:flex;justify-content:space-between;font-size:10.5px;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.04em;margin-bottom:24px;}
+
+  .fcv-breakdown{background:var(--panel-2);border:1px solid var(--line);border-radius:12px;padding:16px 18px;}
+  .fcv-row{display:flex;justify-content:space-between;align-items:baseline;font-size:13px;gap:12px;}
+  .fcv-row span{color:var(--white);}
+  .fcv-row small{color:var(--muted);font-size:10.5px;margin-left:4px;}
+  .fcv-row b{font-family:'IBM Plex Mono',monospace;font-variant-numeric:tabular-nums;white-space:nowrap;}
+  .fcv-row-op{text-align:center;color:var(--muted);font-size:13px;padding:6px 0;}
+  .fcv-row-result{border-top:1px dashed var(--line);margin-top:10px;padding-top:12px;font-weight:700;}
+  .fcv-row-result b{font-size:16px;}
+
+  .fcv-note{font-size:12px;color:var(--muted);line-height:1.6;margin:16px 2px 0;text-align:center;}
+  @media (max-width:520px){
+    .fcv-card{padding:28px 20px 22px;}
+    .fcv-sash{left:-52px;width:160px;}
+  }
 </style>
 </head>
 <body>
@@ -383,6 +468,11 @@
         <span class="pill-dot" id="profitStatusDot"></span>
         <span id="profitStatusText">Calculating…</span>
       </div>
+      <button class="fc-verdict-trigger" onclick="openFCVerdict()">
+        <span class="fc-verdict-trigger-icon">⚖</span>
+        <span>Profit After Fixed Costs</span>
+        <span class="fc-verdict-trigger-arrow">→</span>
+      </button>
       <div class="grid cards">
         <div class="card card-gold"><div class="label">Cash Balance (Bank + MoMo)</div><div class="value" id="kpiCash">GH₵31,455</div><div class="delta up">Closing balance, all accounts</div></div>
         <div class="card"><div class="label" id="kpiSalesLabel">Sales — Jul 2026 (mtd)</div><div class="value" id="kpiSales">GH₵480</div><div class="delta" id="kpiSalesDelta"><span class="down">▼ 96% vs June</span></div></div>
@@ -17697,6 +17787,51 @@
   </main>
 </div>
 
+<!-- FIXED COST VERDICT MODAL -->
+<div class="fcv-backdrop" id="fcvBackdrop" onclick="if(event.target===this) closeFCVerdict()">
+  <div class="fcv-card" role="dialog" aria-modal="true" aria-labelledby="fcvHeading">
+    <div class="fcv-sash"></div>
+    <button class="fcv-close" onclick="closeFCVerdict()" aria-label="Close">✕</button>
+
+    <div class="fcv-eyebrow">Surplus minus Fixed Costs</div>
+    <h2 class="fcv-heading" id="fcvHeading">Profit After Fixed Costs</h2>
+
+    <div class="fcv-badge" id="fcvBadge">
+      <div class="fcv-badge-word" id="fcvBadgeWord">—</div>
+      <div class="fcv-badge-amount" id="fcvBadgeAmount">GH₵0</div>
+    </div>
+
+    <div class="fcv-track">
+      <div class="fcv-track-zone fcv-zone-loss"></div>
+      <div class="fcv-track-zone fcv-zone-even"></div>
+      <div class="fcv-track-zone fcv-zone-profit"></div>
+      <div class="fcv-marker" id="fcvMarker"></div>
+    </div>
+    <div class="fcv-track-labels">
+      <span>Loss</span><span>Break-even</span><span>Profit</span>
+    </div>
+
+    <div class="fcv-breakdown">
+      <div class="fcv-row">
+        <span>Surplus (Sales − Expenses), this month</span>
+        <b id="fcvSurplus">GH₵0</b>
+      </div>
+      <div class="fcv-row-op">−</div>
+      <div class="fcv-row">
+        <span>Total Fixed Costs <small id="fcvFixedCount">(0 items)</small></span>
+        <b id="fcvFixed">GH₵0</b>
+      </div>
+      <div class="fcv-row-op">=</div>
+      <div class="fcv-row fcv-row-result">
+        <span>Result</span>
+        <b id="fcvResult">GH₵0</b>
+      </div>
+    </div>
+
+    <p class="fcv-note" id="fcvNote"></p>
+  </div>
+</div>
+
 <script>
 /* ---------------- BRANDING ---------------- */
 const LOGO_DATA_URI = document.querySelector('.brand img').getAttribute('src');
@@ -20316,6 +20451,7 @@ function renderDashboard(){
   renderHealth(jul);
   renderTrend(jul);
   renderTargetProfitTracker();
+  if(fcvOpen) renderFCVerdict();
 }
 function nearestMaturity(list){
   const dates = list.map(i=>maturityDate(i)).sort((a,b)=>a-b);
@@ -20764,6 +20900,7 @@ function calcBE(){
       y:{ticks:{color:'#9a9a95'}, grid:{color:'#1e1e1e'}}
     }}
   });
+  if(fcvOpen) renderFCVerdict();
 }
 
 /* ---------------- FORECAST ---------------- */
@@ -21119,6 +21256,64 @@ function renderAll(){
   renderBriefing();
   renderPNL();
   renderStaffOps();
+}
+
+/* ---------------- FIXED COST VERDICT MODAL ---------------- */
+let fcvOpen = false;
+function openFCVerdict(){
+  fcvOpen = true;
+  document.getElementById('fcvBackdrop').classList.add('open');
+  renderFCVerdict();
+}
+function closeFCVerdict(){
+  fcvOpen = false;
+  document.getElementById('fcvBackdrop').classList.remove('open');
+}
+function renderFCVerdict(){
+  if(!document.getElementById('fcvBackdrop')) return;
+  const jul = julyTotals();
+  const fixedTotal = fixedCosts.reduce((s,f)=>s+f.amount,0);
+  const result = jul.surplus - fixedTotal;
+
+  const fmt = v => (v<0?'-':'')+'GH₵'+Math.abs(v).toLocaleString(undefined,{maximumFractionDigits:0});
+
+  document.getElementById('fcvSurplus').textContent = fmt(jul.surplus);
+  document.getElementById('fcvFixed').textContent = fmt(fixedTotal);
+  document.getElementById('fcvFixedCount').textContent = `(${fixedCosts.length} item${fixedCosts.length===1?'':'s'})`;
+  document.getElementById('fcvResult').textContent = fmt(result);
+
+  const badge = document.getElementById('fcvBadge');
+  const word = document.getElementById('fcvBadgeWord');
+  const amount = document.getElementById('fcvBadgeAmount');
+  badge.classList.remove('is-profit','is-loss','is-even');
+  if(Math.abs(result) < 1){
+    badge.classList.add('is-even');
+    word.textContent = 'Break-Even';
+  } else if(result > 0){
+    badge.classList.add('is-profit');
+    word.textContent = 'Profit';
+  } else {
+    badge.classList.add('is-loss');
+    word.textContent = 'Loss';
+  }
+  amount.textContent = fmt(result);
+
+  // Marker position along the Loss / Break-even / Profit track. Scaled off the bigger of the
+  // two numbers being compared so the marker stays meaningfully inside the visible track
+  // instead of pinning to an edge on a very large or very small month.
+  const scale = Math.max(Math.abs(jul.surplus), fixedTotal, 500) * 1.4;
+  const pct = Math.max(2, Math.min(98, 50 + (result/scale)*50));
+  document.getElementById('fcvMarker').style.left = pct+'%';
+
+  const note = document.getElementById('fcvNote');
+  const itemWord = fixedCosts.length===1 ? 'item' : 'items';
+  if(Math.abs(result) < 1){
+    note.textContent = `This month's surplus almost exactly covers fixed costs (${fixedCosts.length} ${itemWord} totalling ${fmt(fixedTotal)}) — breaking even once overhead is accounted for.`;
+  } else if(result > 0){
+    note.textContent = `After covering ${fixedCosts.length} fixed cost ${itemWord} (${fmt(fixedTotal)}), the business is still ${fmt(result)} ahead this month.`;
+  } else {
+    note.textContent = `This month's surplus doesn't fully cover the ${fixedCosts.length} fixed cost ${itemWord} (${fmt(fixedTotal)}) — a shortfall of ${fmt(Math.abs(result))} once overhead is included.`;
+  }
 }
 </script>
 
