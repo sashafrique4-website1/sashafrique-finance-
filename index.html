@@ -20614,7 +20614,6 @@ function markRepaid(id){
   renderInvestors();
   renderAll();
 }
-}
 function removeInvestor(id){ investors = investors.filter(i=>i.id!==id); syncEntity('delete','investors', id); renderInvestors(); renderDashboard(); }
 function renderInvestors(){
   const tb = document.getElementById('investorTable');
