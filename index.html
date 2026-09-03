@@ -20603,6 +20603,7 @@ function markRepaid(id){
   const i = investors.find(x=>x.id===id);
   if(!i || i.status==='repaid') return;
   i.status='repaid';
+  syncEntity('update','investors', i.id, i);
   // Record the actual cash outflow so the repayment shows up in Cash Balance,
   // the Expense Log, Budget vs Actual, and the P&L/Cashflow reports.
   const category = 'Investor Repayment';
