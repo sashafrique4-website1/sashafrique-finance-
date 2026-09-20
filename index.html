@@ -17903,6 +17903,16 @@ function applyBackendData(data){
   if(data.staff && data.staff.length) staff = data.staff;
   if(data.assets && data.assets.length) assets = data.assets;
   if(data.investors && data.investors.length) investors = data.investors;
+  // The client generates ids for staff/assets/investors BEFORE calling the backend
+  // (so the UI has something to render immediately), instead of waiting for the
+  // server-assigned id the way revenue/expenses do. That means the nextXNum counters
+  // below have to be kept in sync with whatever the backend actually has, or a new
+  // add can generate an id that collides with an existing row and silently overwrite
+  // it instead of creating a new one (this is what happened to the AST- ids). Recompute
+  // every counter from the real data every time it arrives from the backend.
+  nextStaffNum = staff.reduce((max,s)=>{ const m=String(s.id).match(/-(\d+)$/); return m?Math.max(max,parseInt(m[1],10)):max; },0) + 1;
+  nextAssetNum = assets.reduce((max,a)=>{ const m=String(a.id).match(/-(\d+)$/); return m?Math.max(max,parseInt(m[1],10)):max; },0) + 1;
+  nextInvestorId = investors.reduce((max,i)=>Math.max(max,Number(i.id)||0),0) + 1;
   if(data.reserves && data.reserves.length) reserveWithdrawals = data.reserves;
   if(data.products && data.products.length) products = data.products;
   if(data.fixedCosts && data.fixedCosts.length) fixedCosts = data.fixedCosts;
