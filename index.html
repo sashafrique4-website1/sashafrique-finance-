@@ -17983,7 +17983,7 @@ let nextInvestorId = 2;
 
 let reserveWithdrawals = []; // {date, type:'Emergency'|'Growth', amount, reason}
 
-let expenseCategories = ['Weaving of sash','Embroidery','Packaging','Fuel','Motor repairs/Engine oil','Data bundle/Internet cost','SMS Subscription','Momo/Bank charges','Staff cost - Allowance','Software & Maintenance','Marketing & Advertising','Delivery','Professional Development/Training','Empowernext','Rent','Other expense'];
+let expenseCategories = ['Weaving of sash','Embroidery','Packaging','Fuel','Motor repairs/Engine oil','Data bundle/Internet cost','SMS Subscription','Momo/Bank charges','Staff cost - Allowance','Software & Maintenance','Marketing & Advertising','Delivery','Professional Development/Training','Empowernext','Rent','Other expense','Asset Purchase (Capex)'];
 
 let products = [
   {id:1, name:'Woven Inscription Sash', price:127.4, cost:91, units:60},
@@ -20345,7 +20345,7 @@ const PREVIOUS_MONTH_LABEL = PREVIOUS_MONTH_DATE.toLocaleString('en-US',{month:'
 // liability down — not a cost of running the business). These entries still live in
 // expenseEntries so Cash Balance and the Expense Log stay accurate, but they're stripped out
 // of every "exp" total used for the dashboard, P&L, cashflow, budget, and margin figures below.
-const NON_OPERATING_EXPENSE_CATEGORIES = ['Investor Repayment'];
+const NON_OPERATING_EXPENSE_CATEGORIES = ['Investor Repayment', 'Asset Purchase (Capex)'];
 function operatingExpenses(list){
   return list.filter(e=>!NON_OPERATING_EXPENSE_CATEGORIES.includes(e.category));
 }
